@@ -14,6 +14,13 @@ namespace database{
 	std::string article::get_content(){
 		return content;
 	}
+	std::string article::get_author(){
+		return author;
+	}
+	std::string article::get_title(){
+		return title;
+	}
+
 	unsigned int article::get_id(){
 		return id;
 	}
