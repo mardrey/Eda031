@@ -8,8 +8,6 @@ class database{
 	database();
 	~database();
 	virtual void print_status(int i) = 0;
-	virtual void add_news_group(Newsgroup n);
-	virtual void remove_news_group(Newsgroup n);
 	private:
 };
 }

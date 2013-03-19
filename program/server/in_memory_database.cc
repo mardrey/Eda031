@@ -10,8 +10,6 @@ class in_memory_database : database{
 			std::cout<<"status"<<std::endl;
 
 		}
-		void add_news_group(Newsgroup n){}
-		void remove_news_group(Newsgroup n){}
 	private:
 
 };

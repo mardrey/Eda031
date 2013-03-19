@@ -14,7 +14,7 @@ LDFLAGS	  =
 PREFIX    = /h/d2/u/dt09lo7/Desktop/Cplusplus
 SRCFILES  = $(wildcard *.cc)
 OBJFILES  = $(SRCFILES:%.cc=%.o)
-EXEFILES  = server
+EXEFILES  = main
 DEBUG = false
 # insert the following lines after the definitions of CXXFLAGS and LDFLAGS
 ifeq ($(DEBUG), true)
@@ -47,7 +47,7 @@ uninstall:
 clean:
 	$(RM) $(OBJFILES)
 # Linking:
-server: server.o database.o in_memory_database.o
+main: main.o database.o in_memory_database.o
 #	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 #TOTALLY BONKERS
