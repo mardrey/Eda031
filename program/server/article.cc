@@ -3,9 +3,11 @@
 namespace database{
 
 
-	article::article(std::string s, unsigned int i){
-		content = s;
+	article::article(std::string cont, unsigned int i,std::string titl, std::string aut){
+		content = cont;
 		id = i;
+		title = titl;
+		author = aut;
 	}
 	article::~article(){}
 
