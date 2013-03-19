@@ -47,7 +47,7 @@ uninstall:
 clean:
 	$(RM) $(OBJFILES)
 # Linking:
-main: main.o database.o in_memory_database.o
+main: database.o in_memory_database.o client_server.o
 #	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 #TOTALLY BONKERS
