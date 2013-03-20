@@ -2,6 +2,8 @@
 #include <vector>
 #include "article.h"
 #include "news_group.h"
+#include <iostream>
+#include <climits>
 namespace database{
 
 news_group::news_group(unsigned int i){
@@ -15,10 +17,17 @@ unsigned int news_group::get_id(){
 	return id;
 }
 
-void news_group::new_article(string& content, string& title, string& author){
-	article a(content, article_ids, title, author);
-	article_ids++;
-	add_article(a);
+void news_group::new_article(std::string& content, std::string& title, std::string& author){
+	
+	if(article_ids<UINT_MAX){
+		article a(content, article_ids, title, author);
+		article_ids++;
+		add_article(a);
+	}
+	else{
+		std::cerr<<"Maximum amount of articles reached"<<std::endl;
+		throw -1;
+	}
 }
 
 void news_group::add_article(article a){
