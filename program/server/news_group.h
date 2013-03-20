@@ -11,7 +11,7 @@ public:
 	news_group(unsigned int i);
 	~news_group();
 	unsigned int get_id();
-	void new_article(string& content, string& title, string& author);
+	void new_article(std::string& content, std::string& title, std::string& author);
 	void remove_article(article a);
 	article* get_article(unsigned int art_id);
 private:
