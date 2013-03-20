@@ -12,7 +12,7 @@ public:
 	std::string get_content();
 	unsigned int get_id();
 	std::string get_title();
-	std::string get_author;
+	std::string get_author();
 	bool operator==(article other);
 private:
 	std::string content;
