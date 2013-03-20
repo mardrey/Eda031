@@ -44,6 +44,8 @@ libclientserver.a: connection.o server.o
 
 clean:
 	$(RM) *.o
+	$(RM) *.d
+	$(RM) *.d.*
 
 cleaner: clean
 	$(RM) libclientserver.a
