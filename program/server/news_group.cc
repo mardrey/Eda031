@@ -44,13 +44,27 @@ void news_group::remove_article(article a){
 		}
 	}
 }
-article* news_group::get_article(unsigned int art_id){
+article* news_group::get_article_from_id(unsigned int art_id){
 	article* dest = 0;
-	for(unsigned int i = 0; i<articles.size(); ++i){
+	bool found = false;
+	for(unsigned int i = 0; i<articles.size()&&!found; ++i){
 		if(articles[i].get_id()==art_id){
 			dest=&articles[i];
+			found=true;
 		}
 	}
 	return dest;
 }
+article* news_group::get_article_from_name(std::string& comp_title){
+	article* dest = 0;
+	bool found = false;
+	for(unsigned int i = 0; i<articles.size()&&!found; ++i){
+		if(articles[i].get_title()==comp_title){
+			dest=&articles[i];
+			found=true;
+		}
+	}
+	return dest;
+}
+
 }
