@@ -11,10 +11,11 @@ CXX       = g++
 CXXFLAGS  = -pipe -O2 -Wall -W -ansi -pedantic-errors
 CXXFLAGS += -Wmissing-braces -Wparentheses -Wold-style-cast
 LDFLAGS	  =
+LDLIBS    = -L. -lclientserver
 PREFIX    = /h/d2/u/dt09lo7/Desktop/Cplusplus
 SRCFILES  = $(wildcard *.cc)
 OBJFILES  = $(SRCFILES:%.cc=%.o)
-EXEFILES  = main
+EXEFILES  = main libclientserver.a
 DEBUG = false
 # insert the following lines after the definitions of CXXFLAGS and LDFLAGS
 ifeq ($(DEBUG), true)
@@ -35,17 +36,19 @@ all: $(EXEFILES)
 include $(SRCFILES:.cc=.d)
 
 #Installation
-.PHONY: install
-install: all
-	install $(EXEFILES) $(PREFIX)/bin
-#Uninstallation
-.PHONY: uninstall
-uninstall:
-	$(RM) $(PREFIX)/bin/$(EXEFILES)
-#Cleanup duty
-.PHONY: clean
+
+libclientserver.a: connection.o server.o
+	ar rv libclientserver.a \
+	connection.o server.o
+	ranlib libclientserver.a
+
 clean:
-	$(RM) $(OBJFILES)
+	$(RM) *.o
+
+cleaner: clean
+	$(RM) libclientserver.a
+
+
 # Linking:
 main: database.o in_memory_database.o article.o news_group.o
 #	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
