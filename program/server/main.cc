@@ -4,8 +4,9 @@
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
+#include "protocol.h"
 
-int readNumber(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
+int readCommand(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 
 //using namespace client_server;
 using namespace database;
@@ -22,8 +23,7 @@ int main(){
 		if(conn != 0){
 			try{
 				//do connection stuff
-				int nbr = readNumber(conn);
-				std::cout << nbr << std::endl;
+				int nbr = readCommand(conn);
 			}catch(client_server::ConnectionClosedException&){
 				s.deregisterConnection(conn);
 				delete conn;
@@ -38,11 +38,16 @@ int main(){
 	return 0;
 }
 
-int readNumber(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-	unsigned char byte1 = conn->read();
-	unsigned char byte2 = conn->read();
-	unsigned char byte3 = conn->read();
-	unsigned char byte4 = conn->read();
-	return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+int readCommand(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
+	unsigned char b1 = conn->read();
+	switch(b1){
+		case protocol::Protocol::PAR_STRING : std::cout<<"It is 1!" <<b1<<std::endl;
+		break;
+		case protocol::Protocol::PAR_NUM: std::cout<<"It is 1!" <<b1<<std::endl;
+		break;
+		default: std::cout<<b1<<std::endl;
+		break;
+	}
+	return 1;
 }
 
