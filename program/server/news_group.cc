@@ -6,15 +6,19 @@
 #include <climits>
 namespace database{
 
-news_group::news_group(unsigned int i){
+news_group::news_group(std::string& nam, unsigned int i){
 	id = i;
 	article_ids=0;
+	name = nam;
 }
 news_group::~news_group(){
 	
 }
 unsigned int news_group::get_id(){
 	return id;
+}
+std::string news_group::get_name(){
+	return name;
 }
 
 void news_group::new_article(std::string& content, std::string& title, std::string& author){
