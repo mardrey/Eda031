@@ -17,10 +17,11 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 int com_get_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 int readCommand(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 
+database::in_memory_database imd;
 //using namespace client_server;
 using namespace database;
 int main(){	
-	in_memory_database db();
+	
 	client_server::Server s(2011);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
@@ -44,13 +45,14 @@ int main(){
 			std::cout <<"New client connects"<< std::endl;
 		}
 	}
+	
 	/* code */
 	return 0;
 }
 
 int readCommand(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
 	unsigned char b1 = conn->read();
-	std::cout<<"inReadCommand"<<std::endl;
+	std::cout<<" -inReadCommand"<<std::endl;
 	switch(b1){
 		case protocol::Protocol::COM_LIST_NG : return com_list_ng(conn);
 		break;
@@ -73,32 +75,34 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 }
 
 int com_list_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-	std::cout<<"inListNG"<<std::endl;
-	unsigned char par_type = conn->read();
-	unsigned int n;
-	if(par_type == protocol::Protocol::PAR_STRING){
-		char b1 = conn->read();
-		char b2 = conn->read();
-		char b3 = conn->read();
-		char b4 = conn->read();
-		n = ((b1<<24) | (b2<<16) | (b3<<8) | (b4));
-		std::vector<char> str;
-		for(unsigned int i = 0; i < n; ++i){
-			str.push_back(conn->read());
-		}
-		char end = conn->read();
-		if(end == protocol::Protocol::COM_END){
-			for(std::vector<char>::iterator iter = str.begin(); iter != str.end(); iter++){
-				std::cout<<*iter<<std::endl;
-			}
-			return 0;
-		}else{
-			return 1;
-		}
-	}else if(par_type == protocol::Protocol::PAR_NUM){
+	std::cout<<"  -inListNG"<<std::endl;
+	unsigned char is_end = conn->read();
+	if(is_end == protocol::Protocol::COM_END){
+
+
+
+		conn->write(protocol::Protocol::ANS_LIST_NG);
+		conn->write(protocol::Protocol::PAR_NUM);
+		conn->write(char(0));
+		conn->write(char(0));
+		conn->write(char(0));
+		conn->write(char(1));
+		conn->write(protocol::Protocol::PAR_NUM);
+		conn->write(char(0));
+		conn->write(char(0));
+		conn->write(char(0));
+		conn->write(char(1));
+		conn->write(protocol::Protocol::PAR_STRING);
+		conn->write(char(0));
+		conn->write(char(0));
+		conn->write(char(0));
+		conn->write(char(1));
+		conn->write('A');
+		conn->write(protocol::Protocol::ANS_END);
 		return 0;
+	}else{
+		return 1;
 	}
-	return 0;
 }
 
 int com_create_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {

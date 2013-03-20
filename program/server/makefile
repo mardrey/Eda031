@@ -52,7 +52,7 @@ cleaner: clean
 
 
 # Linking:
-main: database.o in_memory_database.o article.o news_group.o
+main: in_memory_database.o article.o news_group.o
 #	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 #TOTALLY BONKERS
