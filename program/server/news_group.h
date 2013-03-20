@@ -11,12 +11,14 @@ public:
 	news_group(unsigned int i);
 	~news_group();
 	unsigned int get_id();
-	void add_article(article a);
+	void new_article(string& content, string& title, string& author);
 	void remove_article(article a);
 	article* get_article(unsigned int art_id);
 private:
+	void add_article(article a);
 	std::vector<article> articles;
 	unsigned int id;
+	unsigned int article_ids;
 };
 }
 #endif

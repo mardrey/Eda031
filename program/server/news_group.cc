@@ -6,6 +6,7 @@ namespace database{
 
 news_group::news_group(unsigned int i){
 	id = i;
+	article_ids=0;
 }
 news_group::~news_group(){
 	
@@ -13,6 +14,13 @@ news_group::~news_group(){
 unsigned int news_group::get_id(){
 	return id;
 }
+
+void news_group::new_article(string& content, string& title, string& author){
+	article a(content, article_ids, title, author);
+	article_ids++;
+	add_article(a);
+}
+
 void news_group::add_article(article a){
 	articles.push_back(a);
 }
