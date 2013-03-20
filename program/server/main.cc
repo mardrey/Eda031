@@ -5,6 +5,8 @@
 #include "connection.h"
 #include "connectionclosedexception.h"
 #include "protocol.h"
+#include <vector>
+#include <cstdlib>
 
 int com_list_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 int com_create_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
@@ -22,6 +24,7 @@ int main(){
 	client_server::Server s(2011);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
+		exit(1);
 	}else{
 		std::cout <<"Server initialized"<< std::endl;
 	}
@@ -47,6 +50,7 @@ int main(){
 
 int readCommand(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
 	unsigned char b1 = conn->read();
+	std::cout<<"inReadCommand"<<std::endl;
 	switch(b1){
 		case protocol::Protocol::COM_LIST_NG : return com_list_ng(conn);
 		break;
@@ -69,30 +73,55 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 }
 
 int com_list_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-
+	std::cout<<"inListNG"<<std::endl;
+	unsigned char par_type = conn->read();
+	unsigned int n;
+	if(par_type == protocol::Protocol::PAR_STRING){
+		char b1 = conn->read();
+		char b2 = conn->read();
+		char b3 = conn->read();
+		char b4 = conn->read();
+		n = ((b1<<24) | (b2<<16) | (b3<<8) | (b4));
+		std::vector<char> str;
+		for(unsigned int i = 0; i < n; ++i){
+			str.push_back(conn->read());
+		}
+		char end = conn->read();
+		if(end == protocol::Protocol::COM_END){
+			for(std::vector<char>::iterator iter = str.begin(); iter != str.end(); iter++){
+				std::cout<<*iter<<std::endl;
+			}
+			return 0;
+		}else{
+			return 1;
+		}
+	}else if(par_type == protocol::Protocol::PAR_NUM){
+		return 0;
+	}
+	return 0;
 }
 
 int com_create_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-
+	return 0;
 }
 
 int com_delete_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-
+	return 0;
 }
 
 int com_list_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-
+	return 0;
 }
 
 int com_delete_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-
+	return 0;
 }
 
 int com_create_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-
+	return 0;
 }
 
 int com_get_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
-
+	return 0;
 }
 
