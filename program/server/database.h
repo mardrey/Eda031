@@ -1,7 +1,7 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 #include <string>
-
+#include "article.h"
 
 namespace database{
 class database{
@@ -20,6 +20,9 @@ class database{
 	}
 	int  delete_article(unsigned int group_id, unsigned int article_id){
 		return -1;
+	}
+	article* get_article(unsigned int group_id, unsigned int article_id){
+		return 0;
 	}
 	private:
 
