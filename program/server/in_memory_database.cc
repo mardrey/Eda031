@@ -41,8 +41,16 @@ namespace database{
 			bool found = false;			
 			for(unsigned int i = 0; i<ngroups.size();++i){
 				if(ngroups[i].get_id()==id){
+					std::vector<std::string>::iterator pl;
+					for(std::vector<std::string>::iterator iter = ngnames.begin(); iter != ngnames.end();iter++){
+						if(*iter == ngroups[i].get_name()){
+							pl = iter;
+						}
+					}
+					ngnames.erase(pl);
 					ngroups.erase(ngroups.begin()+i);
 					found = true;
+					
 				}
 			}
 			return found;
