@@ -17,7 +17,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 int com_get_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 int readCommand(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 
-database::in_memory_database imd;
+//database::in_memory_database imd;
 //using namespace client_server;
 using namespace database;
 int main(){	
@@ -78,9 +78,6 @@ int com_list_ng(client_server::Connection* conn) throw(client_server::Connection
 	std::cout<<"  -inListNG"<<std::endl;
 	unsigned char is_end = conn->read();
 	if(is_end == protocol::Protocol::COM_END){
-
-
-
 		conn->write(protocol::Protocol::ANS_LIST_NG);
 		conn->write(protocol::Protocol::PAR_NUM);
 		conn->write(char(0));

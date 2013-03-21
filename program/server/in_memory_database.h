@@ -12,7 +12,7 @@ class in_memory_database : database{
 		void add_news_group(std::string& name);
 		void list_news_groups();
 	private:
-			unsigned int news_group_ids;
+	unsigned int news_group_ids;
 	std::vector<std::string> ngnames;
 	std::vector<news_group> ngroups;
 };

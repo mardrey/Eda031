@@ -6,12 +6,12 @@
 namespace database{
 class database{
 	public:
-	database(){};
-	~database(){};
+	database(){}
+	~database(){}
 	//virtual void add_news_group(std::string& name)=0;
-	virtual void print_status(int i);
-	virtual void add_news_group(std::string& name);
-	virtual void list_news_groups();
+	 void print_status(int i){}
+	 void add_news_group(std::string& name){}
+	 void list_news_groups(){}
 	private:
 
 };
