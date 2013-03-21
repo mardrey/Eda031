@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include <vector>
 #include <cstdlib>
+#include "article.h"
 
 int com_list_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 int com_create_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
@@ -204,6 +205,53 @@ int com_delete_ng(client_server::Connection* conn) throw(client_server::Connecti
 }
 
 int com_list_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
+	std::cout<<"  -inListArt"<<std::endl;
+	unsigned char par_num = conn->read();
+	if(par_num == protocol::Protocol::PAR_NUM){
+		unsigned char n1 = conn->read();
+		unsigned char n2 = conn->read();
+		unsigned char n3 = conn->read();
+		unsigned char n4 = conn->read();
+		unsigned int N = (n1<<24 | n2<<16 | n3<<8 | n4);
+		unsigned char end = conn->read();
+		if(end == protocol::Protocol::COM_END){
+			news_group* ng = imd->get_news_group(N);
+			conn->write(protocol::Protocol::ANS_LIST_ART);
+			if(ng == 0){
+				conn->write(protocol::Protocol::ANS_NAK);
+				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
+			}else{
+				std::vector<article> arts = ng->list_articles();
+				conn->write(protocol::Protocol::ANS_ACK);
+				conn->write(protocol::Protocol::PAR_NUM);
+				unsigned char bytes[4];
+				int_to_byte_array(arts.size(), bytes);
+				conn->write(bytes[0]);
+				conn->write(bytes[1]);
+				conn->write(bytes[2]);
+				conn->write(bytes[3]);
+				for(int i = 0; i < atrs.size(); ++i){
+					conn->write(protocol::Protocol::PAR_NUM);
+					int_to_byte_array(arts[i].get_id,bytes);
+					conn->write(bytes[0]);
+					conn->write(bytes[1]);
+					conn->write(bytes[2]);
+					conn->write(bytes[3]);
+					unsigned int n = arts[i].size();
+					conn->write(protocol::Protocol::PAR_STRING);
+					int_to_byte_array(n,bytes);
+					conn->write(bytes[0]);
+					conn->write(bytes[1]);
+					conn->write(bytes[2]);
+					conn->write(bytes[3]);
+					for(int j = 0; j < n; ++j){
+						conn->write(arts[i].get_name()[j]);
+					}
+				}
+			}
+			conn->write(protocol::Protocol::ANS_END);
+		}
+	}
 	return 0;
 }
 
