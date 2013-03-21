@@ -288,7 +288,8 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 			conn->write(protocol::Protocol::ANS_ACK);
 		}
 		else if(deleted == 1){
-			conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
+			conn->write(protocol::Protocol::ANS_NAK);
+			conn->write(protocol::Protocol::ANS_NAK);
 		}
 		else{
 			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
@@ -351,7 +352,7 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 		content_vector.push_back(is_parstring);
 	}
 	std::string content(content_vector.begin(),content_vector.end());
-	unsigned char is_comend = conn.read();
+	unsigned char is_comend = conn->read();
 	if(is_comend!=protocol::Protocol::COM_END){
 		std::cerr<<"Not a create command"<<std::endl;
 		return 1;
@@ -395,12 +396,12 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 			std::cerr<<"Not a get command"<<std::endl;
 			return 1;
 		}
-		unsigned char is_comend = conn.read();
-		if(is_comend!=protocol::Protocol::COM_END){
-			std::cerr<<"Not a create command"<<std::endl;
-			return 1;
-		}	
-		article* art_pointer = imd->get_article(group, article);
+
+		news_group* ng_pointer = imd->get_news_group(group);
+		if(ng_pointer==0){
+			conn->write(protocol::Protocol::ANS_NAK);
+		}
+	//	article* art_pointer = imd->get_article(group, article);
 		
 
 
