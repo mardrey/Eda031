@@ -74,7 +74,19 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 		default: std::cout<<b1<<std::endl;
 		break;
 	}
+	std::cout<<" -Done"<<std::endl;
 	return 1;
+}
+
+void int_to_byte_array(int n, unsigned char* c){
+	c[0] = (n >> 24) & 0xFF;
+	c[1] = (n >> 16) & 0xFF;
+	c[2] = (n >> 8) & 0xFF;
+	c[3] = n & 0xFF;
+}
+
+void string_to_byte_array(std::string n, unsigned char* c){
+//	c = n.str();
 }
 
 int com_list_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
@@ -85,30 +97,35 @@ int com_list_ng(client_server::Connection* conn) throw(client_server::Connection
 		std::vector<news_group> vec = imd->list_news_groups();
 		unsigned int size = vec.size();
 		conn->write(protocol::Protocol::PAR_NUM);
-		char* bArray = static_cast<char*>(static_cast<void*>(&size));
-		conn->write(bArray[0]);
-		conn->write(bArray[1]);
-		conn->write(bArray[2]);
-		conn->write(bArray[3]);
+		unsigned char bytes[4];
+		int_to_byte_array(size, bytes);
+		conn->write(bytes[0]);
+		conn->write(bytes[1]);
+		conn->write(bytes[2]);
+		conn->write(bytes[3]);
 		for(std::vector<news_group>::iterator iter = vec.begin(); iter != vec.end(); iter++){
+			std::cout<<iter->get_name()<<std::endl;
 			unsigned int id = iter->get_id();
 			std::string desc = iter->get_name();
-			char* sBArray = static_cast<char*>(static_cast<void*>(&id));
-			char* sSArray = static_cast<char*>(static_cast<void*>(&desc));
+			unsigned char sBArray[4];
+			int_to_byte_array(id, sBArray);
+//			unsigned char sSArray[4];
+//			string_to_byte_array(desc, sSArray);
 			unsigned int i = 0;
 			conn->write(protocol::Protocol::PAR_NUM);
-			while(sBArray[i] != '\0'){
+			while(i < 4){
 				conn->write(sBArray[i]);
+				std::cout<<sBArray[i]<<std::endl;
 				i++;
 			}
 			i = 0;
 			conn->write(protocol::Protocol::PAR_STRING);
-			while(sSArray[i] != '\0'){
-				conn->write(sSArray[i]);
-				i++;
+			for(unsigned int t = 0; t < desc.size(); ++t){
+				conn->write(desc[t]);
 			}
 		}
 		conn->write(protocol::Protocol::ANS_END);
+		std::cout<<"  -Done"<<std::endl;
 		return 0; //All fine
 	}else{
 		return 1; //Exception
@@ -119,9 +136,13 @@ int com_create_ng(client_server::Connection* conn) throw(client_server::Connecti
 	std::cout<<"  -inCreateNG"<<std::endl;
 	unsigned char par_str = conn->read();
 	if(par_str == protocol::Protocol::PAR_STRING){
-		unsigned char n = conn->read();
+		unsigned char n1 = conn->read();
+		unsigned char n2 = conn->read();
+		unsigned char n3 = conn->read();
+		unsigned char n4 = conn->read();
+		unsigned int N = (n1<<24 | n2<<16 | n3<<8 | n4);
 		std::vector<unsigned char> chars;
-		for(int i = 0; i < n; ++i){
+		for(int i = 0; i < N; ++i){
 			chars.push_back(conn->read());
 		}
 		unsigned char end = conn->read();
@@ -129,8 +150,9 @@ int com_create_ng(client_server::Connection* conn) throw(client_server::Connecti
 			
 				std::string s(chars.begin(),chars.end());
 					int fine = imd->add_news_group(s);
+					conn->write(protocol::Protocol::ANS_CREATE_NG);
 					if(fine == 0){
-					conn->write(protocol::Protocol::ANS_ACK);
+						conn->write(protocol::Protocol::ANS_ACK);
 					}else{
 						conn->write(protocol::Protocol::ANS_NAK);
 					conn->write(protocol::Protocol::ERR_NG_ALREADY_EXISTS);
@@ -142,7 +164,7 @@ int com_create_ng(client_server::Connection* conn) throw(client_server::Connecti
 	}else{
 		return 1; //Exception
 	}
-
+	std::cout<<"  -Done"<<std::endl;
 	return 0;
 }
 
@@ -191,6 +213,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 		else{
 			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 		}
+		std::cout<<"  -Done"<<std::endl;
 		return 0;
 }
 
