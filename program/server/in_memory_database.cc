@@ -47,6 +47,17 @@ namespace database{
 			}
 			return found;
 		}
+
+
+		bool in_memory_database::add_article(unsigned int id, std::string& title, std::string& author, std::string& content){
+			for(unsigned int i = 0; i<ngroups.size();++i){
+				if(ngroups[i].get_id()==id){
+					ngroups[i].new_article(title,author,content);	
+					return true;
+				}
+			}
+			return false;
+		}
 		// 0 = group and article found, 1 = article found, -1 = niether group nor article found
 		int in_memory_database::delete_article(unsigned int group_id, unsigned int article_id){ 
 			int found = -1;
