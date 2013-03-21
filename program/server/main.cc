@@ -141,7 +141,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 		unsigned char group2 = conn->read();
 		unsigned char group3 = conn->read();
 		unsigned char group4 = conn->read();
-		int group = (group1<<24) | (group2<<16) | (group3<<8) | (group4); 
+		unsigned int group = (group1<<24) | (group2<<16) | (group3<<8) | (group4); 
 		unsigned char is_parnum2 = conn->read();
 		if(is_parnum2!=protocol::Protocol::PAR_NUM){
 			std::cerr<<"Not a delete command"<<std::endl;
@@ -151,15 +151,23 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 		unsigned char article2 = conn->read();
 		unsigned char article3 = conn->read();
 		unsigned char article4 = conn->read();
-		int article = (article1<<24) | (article2<<16) | (article3<<8) | (article4); 
+		unsigned int article = (article1<<24) | (article2<<16) | (article3<<8) | (article4); 
 		unsigned char is_comend = conn->read();
 		if(is_comend!=protocol::Protocol::COM_END){
 			std::cerr<<"Not a delete command"<<std::endl;
 			return 1;
 		}
-		
+		int deleted = imd->delete_article(group,article);
+		if(deleted==0){
+			conn->write(protocol::Protocol::ANS_ACK);
+		}
+		else if(deleted == 1){
+			conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
+		}
+		else{
+			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
+		}
 		return 0;
-		
 }
 
 int com_create_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {

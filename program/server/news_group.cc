@@ -37,12 +37,15 @@ void news_group::new_article(std::string& content, std::string& title, std::stri
 void news_group::add_article(article a){
 	articles.push_back(a);
 }
-void news_group::remove_article(article a){
+bool news_group::remove_article(unsigned int id){
+	bool found = false;
 	for(unsigned int i = 0; i<articles.size(); ++i){
-		if(articles[i]==a){
+		if(articles[i].get_id()==id){
 			articles.erase(articles.begin()+i);
+			found = true;
 		}
 	}
+	return found;
 }
 article* news_group::get_article_from_id(unsigned int art_id){
 	article* dest = 0;
