@@ -17,11 +17,11 @@ namespace database{
 
 		}
 
-		void in_memory_database::add_news_group(std::string& name){
+		int in_memory_database::add_news_group(std::string& name){
 			for(unsigned int i = 0; i< ngnames.size(); ++i){
 				if(ngnames[i]==name){
 					std::cerr<<"name is already in use"<<std::endl;
-					throw -2;
+					return -2;
 				}
 			}
 			if(news_group_ids<UINT_MAX){			
@@ -32,8 +32,9 @@ namespace database{
 			}
 			else{
 				std::cerr<<"Maximum amount of news groups reached"<<std::endl;
-				throw -1;
+				return -1;
 			}
+			return 0;
 
 		}
 

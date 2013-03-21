@@ -10,7 +10,7 @@ class in_memory_database : database{
 		in_memory_database();
 		~in_memory_database();
 		void print_status(int i);
-		void add_news_group(std::string& name);
+		int add_news_group(std::string& name);
 		std::vector<news_group> list_news_groups();
 	private:
 	unsigned int news_group_ids;

@@ -93,32 +93,56 @@ int com_list_ng(client_server::Connection* conn) throw(client_server::Connection
 		for(std::vector<news_group>::iterator iter = vec.begin(); iter != vec.end(); iter++){
 			unsigned int id = iter->get_id();
 			std::string desc = iter->get_name();
+			char* sBArray = static_cast<char*>(static_cast<void*>(&id));
+			char* sSArray = static_cast<char*>(static_cast<void*>(&desc));
+			unsigned int i = 0;
+			conn->write(protocol::Protocol::PAR_NUM);
+			while(sBArray[i] != '\0'){
+				conn->write(sBArray[i]);
+				i++;
+			}
+			i = 0;
+			conn->write(protocol::Protocol::PAR_STRING);
+			while(sSArray[i] != '\0'){
+				conn->write(sSArray[i]);
+				i++;
+			}
 		}
-		
-		conn->write(protocol::Protocol::PAR_NUM);
-		conn->write(char(0));
-		conn->write(char(0));
-		conn->write(char(0));
-		conn->write(char(1));
-		conn->write(protocol::Protocol::PAR_NUM);
-		conn->write(char(0));
-		conn->write(char(0));
-		conn->write(char(0));
-		conn->write(char(1));
-		conn->write(protocol::Protocol::PAR_STRING);
-		conn->write(char(0));
-		conn->write(char(0));
-		conn->write(char(0));
-		conn->write(char(1));
-		conn->write('A');
 		conn->write(protocol::Protocol::ANS_END);
-		return 0;
+		return 0; //All fine
 	}else{
-		return 1;
+		return 1; //Exception
 	}
 }
 
 int com_create_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
+	std::cout<<"  -inCreateNG"<<std::endl;
+	unsigned char par_str = conn->read();
+	if(par_str == protocol::Protocol::PAR_STRING){
+		unsigned char n = conn->read();
+		std::vector<unsigned char> chars;
+		for(int i = 0; i < n; ++i){
+			chars.push_back(conn->read());
+		}
+		unsigned char end = conn->read();
+		if(end == protocol::Protocol::COM_END){
+			
+				std::string s(chars.begin(),chars.end());
+					int fine = imd->add_news_group(s);
+					if(fine == 0){
+					conn->write(protocol::Protocol::ANS_ACK);
+					}else{
+						conn->write(protocol::Protocol::ANS_NAK);
+					conn->write(protocol::Protocol::ERR_NG_ALREADY_EXISTS);
+					}
+			conn->write(protocol::Protocol::ANS_END);
+		}else{
+			return 1; //Exception
+		}
+	}else{
+		return 1; //Exception
+	}
+
 	return 0;
 }
 
