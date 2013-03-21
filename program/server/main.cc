@@ -80,7 +80,7 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 	return 1;
 }
 
-void int_to_byte_array(int n, unsigned char* c){
+void int_to_byte_array(unsigned int n, unsigned char* c){
 	c[0] = (n >> 24) & 0xFF;
 	c[1] = (n >> 16) & 0xFF;
 	c[2] = (n >> 8) & 0xFF;
@@ -231,14 +231,14 @@ int com_list_art(client_server::Connection* conn) throw(client_server::Connectio
 				conn->write(bytes[1]);
 				conn->write(bytes[2]);
 				conn->write(bytes[3]);
-				for(int i = 0; i < atrs.size(); ++i){
+				for(int i = 0; i < arts.size(); ++i){
 					conn->write(protocol::Protocol::PAR_NUM);
-					int_to_byte_array(arts[i].get_id,bytes);
+					int_to_byte_array(arts[i].get_id(),bytes);
 					conn->write(bytes[0]);
 					conn->write(bytes[1]);
 					conn->write(bytes[2]);
 					conn->write(bytes[3]);
-					unsigned int n = arts[i].size();
+					unsigned int n = arts[i].get_title().size();
 					conn->write(protocol::Protocol::PAR_STRING);
 					int_to_byte_array(n,bytes);
 					conn->write(bytes[0]);
@@ -246,7 +246,7 @@ int com_list_art(client_server::Connection* conn) throw(client_server::Connectio
 					conn->write(bytes[2]);
 					conn->write(bytes[3]);
 					for(int j = 0; j < n; ++j){
-						conn->write(arts[i].get_name()[j]);
+						conn->write(arts[i].get_title()[j]);
 					}
 				}
 			}
