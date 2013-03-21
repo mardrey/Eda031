@@ -25,7 +25,7 @@ in_memory_database* imd;
 
 int main(){	
 	imd = new in_memory_database();
-	client_server::Server s(2011);
+	client_server::Server s(2012);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
 		exit(1);
@@ -172,6 +172,50 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 }
 
 int com_create_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
+	
+	
+	
+	unsigned char is_parnum1 = conn->read();
+	if(is_parnum1!=protocol::Protocol::PAR_NUM){
+			std::cerr<<"Not a create command"<<std::endl;
+			return 1;
+		}
+	unsigned char group1 = conn->read();
+	unsigned char group2 = conn->read();
+	unsigned char group3 = conn->read();
+	unsigned char group4 = conn->read();
+	unsigned int group = (group1<<24) | (group2<<16) | (group3<<8) | (group4); 
+	unsigned char is_parstring = conn->read();
+	if(is_parstring!=protocol::Protocol::PAR_STRING){
+			std::cerr<<"Not a create command"<<std::endl;
+			return 1;
+		}
+	std::vector<char> title_vector;
+	do{
+		is_parstring=conn->read();
+		title_vector.push_back(is_parstring);
+	}while(is_parstring!=protocol::Protocol::PAR_STRING);
+	std::string title(title_vector.begin(),title_vector.end());
+	std::vector<char> author_vector;
+	do{
+		is_parstring=conn->read();
+		author_vector.push_back(is_parstring);
+	}while(is_parstring!=protocol::Protocol::PAR_STRING);
+	std::string author(author_vector.begin(),author_vector.end());
+	std::vector<char> content_vector;
+	do{
+		is_parstring=conn->read();
+		content_vector.push_back(is_parstring);
+	}while(is_parstring!=protocol::Protocol::COM_END);
+	std::string content(content_vector.begin(),content_vector.end());
+	bool found = imd->add_article(group,title,author,content);
+	if(found){
+		conn->write(protocol::Protocol::ANS_ACK);
+	}
+	else{
+		conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
+	}
+	conn->write(protocol::Protocol::ANS_END);
 	return 0;
 }
 
