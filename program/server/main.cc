@@ -289,7 +289,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 		}
 		else if(deleted == 1){
 			conn->write(protocol::Protocol::ANS_NAK);
-			conn->write(protocol::Protocol::ANS_ART_DOES_NOT_EXIST);
+			conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 		}
 		else{
 			conn->write(protocol::Protocol::ANS_NAK);
