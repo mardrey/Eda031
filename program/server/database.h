@@ -15,8 +15,8 @@ class database{
 	bool delete_news_group(unsigned int id){
 		return false;
 	}
-	bool  delete_article(unsigned int group_id, unsigned int article_id){
-		return false;
+	int  delete_article(unsigned int group_id, unsigned int article_id){
+		return -1;
 	}
 	private:
 
