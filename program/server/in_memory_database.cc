@@ -84,6 +84,7 @@ namespace database{
 			return ngroups;
 
 		}
+
 		article* in_memory_database::get_article(unsigned int group_id, unsigned int article_id){
 			article* art_pointer = 0;
 			for(unsigned int i = 0; i< ngroups.size(); ++i){
@@ -92,6 +93,15 @@ namespace database{
 				}
 			}
 			return art_pointer;
+		}
+		news_group* in_memory_database::get_news_group(int id){		
+			for(unsigned int i = 0; i<ngroups.size();++i){
+				if(ngroups[i].get_id()==id){
+					return &ngroups[i];
+				}
+			}
+			return 0;
+
 		}
 
 }
