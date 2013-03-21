@@ -175,6 +175,31 @@ int com_create_ng(client_server::Connection* conn) throw(client_server::Connecti
 }
 
 int com_delete_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
+	std::cout<<"  -inDeleteNG"<<std::endl;
+	unsigned char par_num = conn->read();
+	if(par_num == protocol::Protocol::PAR_NUM){
+		unsigned char n1 = conn->read();
+		unsigned char n2 = conn->read();
+		unsigned char n3 = conn->read();
+		unsigned char n4 = conn->read();
+		unsigned int N = (n1<<24 | n2<<16 | n3<<8 | n4);
+		unsigned char end = conn->read();
+		if(end == protocol::Protocol::COM_END){
+			bool succ = imd->delete_news_group(N);
+			conn->write(protocol::Protocol::ANS_DELETE_NG);
+			if(succ){
+				conn->write(protocol::Protocol::ANS_ACK);
+			}else{
+				conn->write(protocol::Protocol::ANS_NAK);
+				conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
+			}
+			conn->write(protocol::Protocol::ANS_END);
+		}else{
+			return 1; //Exception
+		}
+	}else{
+		return 1; //Exception
+	}
 	return 0;
 }
 
