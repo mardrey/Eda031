@@ -167,6 +167,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 		else{
 			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 		}
+		conn->write(protocol::Protocol::ANS_END);
 		return 0;
 }
 
