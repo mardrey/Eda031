@@ -37,7 +37,33 @@ namespace database{
 			return 0;
 
 		}
-
+		bool in_memory_database::delete_news_group(unsigned int id){
+			bool found = false;			
+			for(unsigned int i = 0; i<ngroups.size();++i){
+				if(ngroups[i].get_id()==id){
+					ngroups.erase(ngroups.begin()+i);
+					found = true;
+				}
+			}
+			return found;
+		}
+		// 0 = group and article found, 1 = article found, -1 = niether group nor article found
+		int in_memory_database::delete_article(unsigned int group_id, unsigned int article_id){ 
+			int found = -1;
+			for(unsigned int i = 0; i<ngroups.size();++i){
+				if(ngroups[i].get_id()==group_id){
+					if(ngroups[i].remove_article(article_id)){
+						found = 0;
+						return found;
+					}
+					else{
+						found = 1;
+						return found;
+					}					
+				}
+			}
+			return found;
+		}
 		std::vector<news_group>  in_memory_database::list_news_groups(){
 			for(unsigned int i = 0; i< ngroups.size(); ++i){
 				std::cout<<"name: "<<ngroups[i].get_name()<<"	id: "<<ngroups[i].get_id()<<std::endl;

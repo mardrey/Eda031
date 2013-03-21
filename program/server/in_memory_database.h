@@ -12,6 +12,8 @@ class in_memory_database : database{
 		void print_status(int i);
 		int add_news_group(std::string& name);
 		std::vector<news_group> list_news_groups();
+		bool delete_news_group(unsigned int id);
+		int delete_article(unsigned int group_id, unsigned int article_id);
 	private:
 	unsigned int news_group_ids;
 	std::vector<std::string> ngnames;
