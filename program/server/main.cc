@@ -27,7 +27,7 @@ in_memory_database* imd;
 
 int main(){	
 	imd = new in_memory_database();
-	client_server::Server s(2011);
+	client_server::Server s(2019);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
 		exit(1);
@@ -410,7 +410,7 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 			std::cerr<<"Not a get command"<<std::endl;
 			return 1;
 		}
-
+		conn->write(protocol::Protocol::ANS_GET_ART);
 		news_group* ng_pointer = imd->get_news_group(group);
 		if(ng_pointer==0){
 			conn->write(protocol::Protocol::ANS_NAK);
@@ -422,13 +422,43 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 				conn->write(protocol::Protocol::ANS_NAK);
 				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 			}
+			else{
+					conn->write(protocol::Protocol::ANS_ACK);
+					conn->write(protocol::Protocol::PAR_STRING);
+					std::string title = art_pointer->get_title();
+					unsigned char title_bytes[4];
+					int_to_byte_array(title.size(),title_bytes);
+					for(unsigned int i = 0; i < 4; ++i){
+						conn->write(title_bytes[i]);
+					}
+					for(int i = 0; i< title.size(); ++i){
+						conn->write(title[i]);
+					}
+					conn->write(protocol::Protocol::PAR_STRING);
+					std::string author = art_pointer->get_author();
+					unsigned char author_bytes[4];
+					int_to_byte_array(author.size(),author_bytes);
+					for(unsigned int i = 0; i < 4; ++i){
+						conn->write(author_bytes[i]);
+					}
+					for(int i = 0; i< author.size(); ++i){
+						conn->write(author[i]);
+					}
+					conn->write(protocol::Protocol::PAR_STRING);
+					std::string content = art_pointer->get_content();	
+					unsigned char content_bytes[4];
+					int_to_byte_array(content.size(),content_bytes);
+					for(unsigned int i = 0; i < 4; ++i){
+						conn->write(content_bytes[i]);
+					}
+					for(int i = 0; i< author.size(); ++i){
+						conn->write(author[i]);
+					}
+			}
+				
 		}
+		conn->write(protocol::Protocol::ANS_END);
 		
-		
-
-
-
-
 	return 0;
 }
 

@@ -97,7 +97,7 @@ namespace database{
 			article* art_pointer = 0;
 			for(unsigned int i = 0; i< ngroups.size(); ++i){
 				if(ngroups[i].get_id()==group_id){
-					ngroups[i].get_article_from_id(article_id);
+					art_pointer = ngroups[i].get_article_from_id(article_id);
 				}
 			}
 			return art_pointer;
