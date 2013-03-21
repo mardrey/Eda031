@@ -6,6 +6,8 @@
 #include <climits>
 #include <string>
 #include <vector>
+#include "article.h"
+
 
 namespace database{
 		in_memory_database::in_memory_database(){
@@ -90,6 +92,16 @@ namespace database{
 			return ngroups;
 
 		}
+
+		article* in_memory_database::get_article(unsigned int group_id, unsigned int article_id){
+			article* art_pointer = 0;
+			for(unsigned int i = 0; i< ngroups.size(); ++i){
+				if(ngroups[i].get_id()==group_id){
+					ngroups[i].get_article_from_id(article_id);
+				}
+			}
+			return art_pointer;
+		}
 		news_group* in_memory_database::get_news_group(int id){		
 			for(unsigned int i = 0; i<ngroups.size();++i){
 				if(ngroups[i].get_id()==id){
@@ -97,6 +109,7 @@ namespace database{
 				}
 			}
 			return 0;
+
 		}
 
 }

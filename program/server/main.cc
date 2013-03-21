@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include "article.h"
 
+
 int com_list_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 int com_create_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 int com_delete_ng(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
@@ -287,9 +288,11 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 			conn->write(protocol::Protocol::ANS_ACK);
 		}
 		else if(deleted == 1){
-			conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
+			conn->write(protocol::Protocol::ANS_NAK);
+			conn->write(protocol::Protocol::ANS_ART_DOES_NOT_EXIST);
 		}
 		else{
+			conn->write(protocol::Protocol::ANS_NAK);
 			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 		}
 		std::cout<<"  -Done"<<std::endl;
@@ -299,7 +302,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 
 int com_create_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
 	
-	
+	std::cout<<"  -inCreateArt"<<std::endl;
 	
 	unsigned char is_parnum1 = conn->read();
 	if(is_parnum1!=protocol::Protocol::PAR_NUM){
@@ -350,11 +353,18 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 		content_vector.push_back(is_parstring);
 	}
 	std::string content(content_vector.begin(),content_vector.end());
+	unsigned char is_comend = conn->read();
+	if(is_comend!=protocol::Protocol::COM_END){
+		std::cerr<<"Not a create command"<<std::endl;
+		return 1;
+	}	
+
 	bool found = imd->add_article(group,title,author,content);
 	if(found){
 		conn->write(protocol::Protocol::ANS_ACK);
 	}
 	else{
+		conn->write(protocol::Protocol::ANS_NAK);
 		conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 	}
 	conn->write(protocol::Protocol::ANS_END);
@@ -362,6 +372,43 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 }
 
 int com_get_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException) {
+		std::cout<<"  -inGetArt"<<std::endl;
+		unsigned char is_parnum1 = conn->read();
+		if(is_parnum1!=protocol::Protocol::PAR_NUM){
+			std::cerr<<"Not a get command"<<std::endl;
+			return 1;
+		}
+		unsigned char group1 = conn->read();
+		unsigned char group2 = conn->read();
+		unsigned char group3 = conn->read();
+		unsigned char group4 = conn->read();
+		unsigned int group = (group1<<24) | (group2<<16) | (group3<<8) | (group4); 
+		unsigned char is_parnum2 = conn->read();
+		if(is_parnum2!=protocol::Protocol::PAR_NUM){
+			std::cerr<<"Not a get command"<<std::endl;
+			return 1;
+		}
+		unsigned char article1 = conn->read();
+		unsigned char article2 = conn->read();
+		unsigned char article3 = conn->read();
+		unsigned char article4 = conn->read();
+		unsigned int article = (article1<<24) | (article2<<16) | (article3<<8) | (article4); 
+		unsigned char is_comend = conn->read();
+		if(is_comend!=protocol::Protocol::COM_END){
+			std::cerr<<"Not a get command"<<std::endl;
+			return 1;
+		}
+
+		news_group* ng_pointer = imd->get_news_group(group);
+		if(ng_pointer==0){
+			conn->write(protocol::Protocol::ANS_NAK);
+		}
+	//	article* art_pointer = imd->get_article(group, article);
+		
+
+
+
+
 	return 0;
 }
 
