@@ -283,6 +283,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 			std::cerr<<"Not a delete command"<<std::endl;
 			return 1;
 		}
+		conn->write(protocol::Protocol::ANS_DELETE_ART);
 		int deleted = imd->delete_article(group,article);
 		if(deleted==0){
 			conn->write(protocol::Protocol::ANS_ACK);
@@ -422,7 +423,8 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 				conn->write(protocol::Protocol::ANS_NAK);
 				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 			}
-			else{
+			else{	
+					std::cout<<"SYSO"<<std::endl;
 					conn->write(protocol::Protocol::ANS_ACK);
 					conn->write(protocol::Protocol::PAR_STRING);
 					std::string title = art_pointer->get_title();
