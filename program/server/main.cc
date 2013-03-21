@@ -120,6 +120,12 @@ int com_list_ng(client_server::Connection* conn) throw(client_server::Connection
 			}
 			i = 0;
 			conn->write(protocol::Protocol::PAR_STRING);
+			unsigned char bytes2[4];
+			int_to_byte_array(desc.size(),bytes2);
+			conn->write(bytes2[0]);
+			conn->write(bytes2[1]);
+			conn->write(bytes2[2]);
+			conn->write(bytes2[3]);
 			for(unsigned int t = 0; t < desc.size(); ++t){
 				conn->write(desc[t]);
 			}
