@@ -403,7 +403,7 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 		if(ng_pointer==0){
 			conn->write(protocol::Protocol::ANS_NAK);
 		}
-	//	article* art_pointer = imd->get_article(group, article);
+		database::article* art_pointer; //= imd->get_article(group, article);
 		
 
 
