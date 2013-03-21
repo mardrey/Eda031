@@ -27,7 +27,7 @@ in_memory_database* imd;
 
 int main(){	
 	imd = new in_memory_database();
-	client_server::Server s(2014);
+	client_server::Server s(2011);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
 		exit(1);
@@ -331,6 +331,12 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 	}
 	std::string title(title_vector.begin(),title_vector.end());
 
+	unsigned char is_parstring2 = conn->read();
+	if(is_parstring2!=protocol::Protocol::PAR_STRING){
+			std::cerr<<"Not a create command"<<std::endl;
+			return 1;
+	}
+
 	std::vector<char> author_vector;
 	unsigned char author1 = conn->read();
 	unsigned char author2 = conn->read();
@@ -342,6 +348,11 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 		author_vector.push_back(is_parstring);
 	}
 	std::string author(author_vector.begin(),author_vector.end());
+	unsigned char is_parstring3 = conn->read();
+	if(is_parstring3!=protocol::Protocol::PAR_STRING){
+			std::cerr<<"Not a create command"<<std::endl;
+			return 1;
+		}
 	std::vector<char> content_vector;
 	unsigned char content1 = conn->read();
 	unsigned char content2 = conn->read();
@@ -360,6 +371,7 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 	}	
 
 	bool found = imd->add_article(group,title,author,content);
+	conn->write(protocol::Protocol::ANS_CREATE_ART);
 	if(found){
 		conn->write(protocol::Protocol::ANS_ACK);
 	}
