@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <climits>
+#include <string>
+#include <vector>
+
 namespace database{
 		in_memory_database::in_memory_database(){
 			news_group_ids = 0;	
@@ -34,10 +37,12 @@ namespace database{
 
 		}
 
-		void in_memory_database::list_news_groups(){
+		std::vector<news_group>  in_memory_database::list_news_groups(){
 			for(unsigned int i = 0; i< ngroups.size(); ++i){
 				std::cout<<"name: "<<ngroups[i].get_name()<<"	id: "<<ngroups[i].get_id()<<std::endl;
 			}
+			return ngroups;
+
 		}
 
 }

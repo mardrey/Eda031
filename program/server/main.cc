@@ -20,8 +20,11 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 //database::in_memory_database imd;
 //using namespace client_server;
 using namespace database;
+
+in_memory_database* imd;
+
 int main(){	
-	
+	imd = new in_memory_database();
 	client_server::Server s(2011);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
@@ -45,7 +48,7 @@ int main(){
 			std::cout <<"New client connects"<< std::endl;
 		}
 	}
-	
+	delete(imd);
 	/* code */
 	return 0;
 }
@@ -79,6 +82,19 @@ int com_list_ng(client_server::Connection* conn) throw(client_server::Connection
 	unsigned char is_end = conn->read();
 	if(is_end == protocol::Protocol::COM_END){
 		conn->write(protocol::Protocol::ANS_LIST_NG);
+		std::vector<news_group> vec = imd->list_news_groups();
+		unsigned int size = vec.size();
+		conn->write(protocol::Protocol::PAR_NUM);
+		char* bArray = static_cast<char*>(static_cast<void*>(&size));
+		conn->write(bArray[0]);
+		conn->write(bArray[1]);
+		conn->write(bArray[2]);
+		conn->write(bArray[3]);
+		for(std::vector<news_group>::iterator iter = vec.begin(); iter != vec.end(); iter++){
+			unsigned int id = iter->get_id();
+			std::string desc = iter->get_name();
+		}
+		
 		conn->write(protocol::Protocol::PAR_NUM);
 		conn->write(char(0));
 		conn->write(char(0));
