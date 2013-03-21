@@ -2,7 +2,7 @@
 #define DATABASE_H
 #include <string>
 #include "article.h"
-
+#include "news_group.h"
 namespace database{
 class database{
 	public:
@@ -22,6 +22,9 @@ class database{
 		return -1;
 	}
 	article* get_article(unsigned int group_id, unsigned int article_id){
+		return 0;
+	}
+	news_group* get_news_group(unsigned int id){
 		return 0;
 	}
 	private:

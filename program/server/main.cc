@@ -150,7 +150,7 @@ int com_create_ng(client_server::Connection* conn) throw(client_server::Connecti
 		unsigned char n4 = conn->read();
 		unsigned int N = (n1<<24 | n2<<16 | n3<<8 | n4);
 		std::vector<unsigned char> chars;
-		for(int i = 0; i < N; ++i){
+		for(unsigned int i = 0; i < N; ++i){
 			chars.push_back(conn->read());
 		}
 		unsigned char end = conn->read();
@@ -402,8 +402,16 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 		news_group* ng_pointer = imd->get_news_group(group);
 		if(ng_pointer==0){
 			conn->write(protocol::Protocol::ANS_NAK);
+			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 		}
-		database::article* art_pointer; //= imd->get_article(group, article);
+		else{
+			database::article* art_pointer= imd->get_article(group, article);
+			if(art_pointer == 0){ 
+				conn->write(protocol::Protocol::ANS_NAK);
+				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
+			}
+		}
+		
 		
 
 

@@ -102,7 +102,7 @@ namespace database{
 			}
 			return art_pointer;
 		}
-		news_group* in_memory_database::get_news_group(int id){		
+		news_group* in_memory_database::get_news_group(unsigned int id){		
 			for(unsigned int i = 0; i<ngroups.size();++i){
 				if(ngroups[i].get_id()==id){
 					return &ngroups[i];
