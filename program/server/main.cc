@@ -244,22 +244,38 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 			return 1;
 		}
 	std::vector<char> title_vector;
-	do{
+	unsigned char title1 = conn->read();
+	unsigned char title2 = conn->read();
+	unsigned char title3 = conn->read();
+	unsigned char title4 = conn->read();
+	unsigned int title_n = (title1<<24) | (title2<<16) | (title3<<8) | (title4); 
+	for(unsigned int i = 0; i<title_n;++i){
 		is_parstring=conn->read();
 		title_vector.push_back(is_parstring);
-	}while(is_parstring!=protocol::Protocol::PAR_STRING);
+	}
 	std::string title(title_vector.begin(),title_vector.end());
+
 	std::vector<char> author_vector;
-	do{
+	unsigned char author1 = conn->read();
+	unsigned char author2 = conn->read();
+	unsigned char author3 = conn->read();
+	unsigned char author4 = conn->read();
+	unsigned int author_n = (author1<<24) | (author2<<16) | (author3<<8) | (author4); 
+	for(unsigned int i = 0; i<author_n;++i){
 		is_parstring=conn->read();
 		author_vector.push_back(is_parstring);
-	}while(is_parstring!=protocol::Protocol::PAR_STRING);
+	}
 	std::string author(author_vector.begin(),author_vector.end());
 	std::vector<char> content_vector;
-	do{
+	unsigned char content1 = conn->read();
+	unsigned char content2 = conn->read();
+	unsigned char content3 = conn->read();
+	unsigned char content4 = conn->read();
+	unsigned int content_n = (content1<<24) | (content2<<16) | (content3<<8) | (content4); 
+	for(unsigned int i = 0; i<content_n;++i){
 		is_parstring=conn->read();
 		content_vector.push_back(is_parstring);
-	}while(is_parstring!=protocol::Protocol::COM_END);
+	}
 	std::string content(content_vector.begin(),content_vector.end());
 	bool found = imd->add_article(group,title,author,content);
 	if(found){
