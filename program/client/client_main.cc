@@ -3,25 +3,32 @@
 #include "connection.h"
 #include "client_connection_handler.h"
 #include <string>
-#include "client_connection_handler.h"
-#include "connection.h"
+
 using namespace client;
 using namespace client_server;
 int main(int argc, char* argv[]){
 	if(argc<3){
 		std::cerr<<"Insufficient arguments. Input is host port"<<std::endl;
-		return 1;
+		exit(1);
 	}
 	std::cout<<"\t\t\t**************************************\t\t\t\n"<<"\t\t\t* Welcome to News Group Reader 2000  * \t\t\t"<<"\n\t\t\t**************************************\t\t\t"<<std::endl;
 
 	std::cout<<"\n\n\t\t\t\tPlease select a command:\n\n1:\tList News Groups\n2:\tCreate News Group\n3:\tDelete News Group\n4:\tCreate Article\n5:\tDelete Article\n6:\tGet Article"<<std::endl;
 	std::string command;	
-	client_server::Connection* cp;
+	
 	const char* host = argv[1];
 	int port = atoi(argv[2]);
-	*cp = client_server::Connection(host,port);
-	client_connection_handler cch(cp);
+	client_server::Connection cp("localhost",1155);
+	std::cout<<"host:"<<host<<std::endl;
+	std::cout<<"port:"<<port<<std::endl;
+	if (!cp.isConnected()) {
+		std::cerr << "Connection attempt failed" << std::endl;
+		exit(1);
+	}
+
+	client_connection_handler cch(&cp);
 	while(true){
+		std::cout<<"in da loop"<<std::endl;
 		std::cin>>command;
 		int nbr = atoi(command.c_str());
 		switch(nbr){
@@ -49,12 +56,5 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	client_server::Connection conn("localhost", 2011);
-	if (! conn.isConnected()) {
-		std::cerr << "Connection attempt failed" << std::endl;
-		return 1;
-	}
-	client::client_connection_handler cch(&conn);
-//	cch.send_command_list_ng();
 return 0;
 }
