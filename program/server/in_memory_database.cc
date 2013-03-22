@@ -86,9 +86,6 @@ namespace database{
 			return found;
 		}
 		std::vector<news_group>  in_memory_database::list_news_groups(){
-			for(unsigned int i = 0; i< ngroups.size(); ++i){
-				std::cout<<"name: "<<ngroups[i].get_name()<<"	id: "<<ngroups[i].get_id()<<std::endl;
-			}
 			return ngroups;
 
 		}
