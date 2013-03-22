@@ -2,6 +2,8 @@
 #include <string>
 #include "connection.h"
 #include <vector>
+#include "protocol.h"
+#include <iostream>
 
 namespace client{
 
@@ -46,8 +48,49 @@ void write_int(int N, client_server::Connection* conn){
 	conn->write(bytes[3]);
 }
 
+client_connection_handler::client_connection_handler(client_server::Connection* connection){
+	conn = connection;
+}
+
+client_connection_handler::~client_connection_handler(){
+	
+}
+
 bool client_connection_handler::send_command_list_ng(){
-	return false;
+	conn->write(protocol::Protocol::COM_LIST_NG);
+	conn->write(protocol::Protocol::COM_END);
+	unsigned char com = conn->read();
+	std::vector<unsigned int> ng_ids;
+	std::vector<std::string> ng_names;
+	if(com == protocol::Protocol::ANS_LIST_NG){
+		com = conn->read();
+		if(com == protocol::Protocol::PAR_NUM){
+			unsigned int nbr_ng = read_int(conn);
+			for(unsigned int i = 0; i < nbr_ng; ++i){
+				com = conn->read();
+				if(com != protocol::Protocol::PAR_NUM){
+					return false;
+				}
+				unsigned int id = read_int(conn);
+				com = conn->read();
+				if(com != protocol::Protocol::PAR_STRING){
+					return false;
+				}
+				unsigned int str_len = read_int(conn);
+				std::string name = read_string(str_len,conn);
+				ng_ids.push_back(id);
+				ng_names.push_back(name);
+			}
+		}else{
+			return false; //something is wrong with server
+		}
+	}else{
+		return false; //something is wrong with server
+	}
+	for(unsigned int t = 0; t < ng_ids.size();++t){
+		std::cout<<ng_ids[t]<<" : "<<ng_names[t]<<std::endl;
+	}
+	return true;
 }
 
 bool client_connection_handler::send_command_create_ng(std::string ng_name){

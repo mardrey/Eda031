@@ -4,7 +4,7 @@
 namespace client{
 	class client_connection_handler{
 	public:
-		client_connection_handler(client_server::Connection* connection) : conn(connection){};
+		client_connection_handler(client_server::Connection* connection);
 		~client_connection_handler();
 
 		bool send_command_list_ng();

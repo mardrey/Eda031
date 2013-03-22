@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <iostream>
+#include "connection.h"
+#include "client_connection_handler.h"
 #include <string>
 #include "client_connection_handler.h"
 #include "connection.h"
@@ -46,5 +48,13 @@ int main(int argc, char* argv[]){
 			break;
 		}
 	}
+
+	client_server::Connection conn("localhost", 2011);
+	if (! conn.isConnected()) {
+		std::cerr << "Connection attempt failed" << std::endl;
+		return 1;
+	}
+	client::client_connection_handler cch(&conn);
+//	cch.send_command_list_ng();
 return 0;
 }
