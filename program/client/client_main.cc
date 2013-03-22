@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
 	
 	const char* host = argv[1];
 	int port = atoi(argv[2]);
-	client_server::Connection cp("localhost",1155);
+	client_server::Connection cp(host,port);
 	std::cout<<"host:"<<host<<std::endl;
 	std::cout<<"port:"<<port<<std::endl;
 	if (!cp.isConnected()) {
