@@ -14,7 +14,7 @@ public:
 	std::string get_name();
 	void new_article(std::string& content, std::string& title, std::string& author);
 	bool remove_article(unsigned int id);
-	std::vector<article> list_articles();
+	std::vector<article>* list_articles();
 	article* get_article_from_id(unsigned int art_id);
 	article* get_article_from_name(std::string& comp_title);
 private:

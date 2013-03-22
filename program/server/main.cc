@@ -82,11 +82,30 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 	return 1;
 }
 
+int read_int(client_server::Connection* conn){
+	char c[4];
+	c[0] = conn->read();
+	c[1] = conn->read();
+	c[2] = conn->read();
+	c[3] = conn->read();
+	int i = ((c[0] << 24) | (c[1] << 16) | (c[2] << 8) | c[3]);
+	return i;
+}
+
 void int_to_byte_array(unsigned int n, unsigned char* c){
 	c[0] = (n >> 24) & 0xFF;
 	c[1] = (n >> 16) & 0xFF;
 	c[2] = (n >> 8) & 0xFF;
 	c[3] = n & 0xFF;
+}
+
+void write_int(int N, client_server::Connection* conn){
+	unsigned char bytes[4];
+	int_to_byte_array(N, bytes);
+	conn->write(bytes[0]);
+	conn->write(bytes[1]);
+	conn->write(bytes[2]);
+	conn->write(bytes[3]);
 }
 
 void string_to_byte_array(std::string n, unsigned char* c){
@@ -212,11 +231,9 @@ int com_list_art(client_server::Connection* conn) throw(client_server::Connectio
 	std::cout<<"  -inListArt"<<std::endl;
 	unsigned char par_num = conn->read();
 	if(par_num == protocol::Protocol::PAR_NUM){
-		unsigned char n1 = conn->read();
-		unsigned char n2 = conn->read();
-		unsigned char n3 = conn->read();
-		unsigned char n4 = conn->read();
-		unsigned int N = (n1<<24 | n2<<16 | n3<<8 | n4);
+
+		unsigned int N = read_int(conn);
+
 		unsigned char end = conn->read();
 		if(end == protocol::Protocol::COM_END){
 			news_group* ng = imd->get_news_group(N);
@@ -225,31 +242,26 @@ int com_list_art(client_server::Connection* conn) throw(client_server::Connectio
 				conn->write(protocol::Protocol::ANS_NAK);
 				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 			}else{
-				std::vector<article> arts = ng->list_articles();
+				std::vector<article>* arts = ng->list_articles();
 				conn->write(protocol::Protocol::ANS_ACK);
 				conn->write(protocol::Protocol::PAR_NUM);
-				unsigned char bytes[4];
-				int_to_byte_array(arts.size(), bytes);
-				conn->write(bytes[0]);
-				conn->write(bytes[1]);
-				conn->write(bytes[2]);
-				conn->write(bytes[3]);
-				for(int i = 0; i < arts.size(); ++i){
+
+				write_int(arts->size(), conn);
+
+				for(int i = 0; i < arts->size(); ++i){
 					conn->write(protocol::Protocol::PAR_NUM);
-					int_to_byte_array(arts[i].get_id(),bytes);
-					conn->write(bytes[0]);
-					conn->write(bytes[1]);
-					conn->write(bytes[2]);
-					conn->write(bytes[3]);
-					unsigned int n = arts[i].get_title().size();
+
+					write_int((*arts)[i].get_id(), conn);
+
+
+
+					unsigned int n = (*arts)[i].get_title().size();
 					conn->write(protocol::Protocol::PAR_STRING);
-					int_to_byte_array(n,bytes);
-					conn->write(bytes[0]);
-					conn->write(bytes[1]);
-					conn->write(bytes[2]);
-					conn->write(bytes[3]);
+
+					write_int((*arts)[i].get_title().size(), conn);
+
 					for(int j = 0; j < n; ++j){
-						conn->write(arts[i].get_title()[j]);
+						conn->write((*arts)[i].get_title()[j]);
 					}
 				}
 			}
@@ -394,21 +406,13 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 			std::cerr<<"Not a get command"<<std::endl;
 			return 1;
 		}
-		unsigned char group1 = conn->read();
-		unsigned char group2 = conn->read();
-		unsigned char group3 = conn->read();
-		unsigned char group4 = conn->read();
-		unsigned int group = (group1<<24) | (group2<<16) | (group3<<8) | (group4); 
+		unsigned int group = read_int(conn);
 		unsigned char is_parnum2 = conn->read();
 		if(is_parnum2!=protocol::Protocol::PAR_NUM){
 			std::cerr<<"Not a get command"<<std::endl;
 			return 1;
 		}
-		unsigned char article1 = conn->read();
-		unsigned char article2 = conn->read();
-		unsigned char article3 = conn->read();
-		unsigned char article4 = conn->read();
-		unsigned int article = (article1<<24) | (article2<<16) | (article3<<8) | (article4); 
+		unsigned int article = read_int(conn);
 		unsigned char is_comend = conn->read();
 		if(is_comend!=protocol::Protocol::COM_END){
 			std::cerr<<"Not a get command"<<std::endl;
@@ -431,40 +435,28 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 					conn->write(protocol::Protocol::ANS_ACK);
 					conn->write(protocol::Protocol::PAR_STRING);
 					std::string title = art_pointer->get_title();
-					unsigned char title_bytes[4];
-					int_to_byte_array(title.size(),title_bytes);
-					for(unsigned int i = 0; i < 4; ++i){
-						conn->write(title_bytes[i]);
-					}
+					write_int(title.size(), conn);
 					for(int i = 0; i< title.size(); ++i){
 						conn->write(title[i]);
 					}
 					conn->write(protocol::Protocol::PAR_STRING);
 					std::string author = art_pointer->get_author();
-					unsigned char author_bytes[4];
-					int_to_byte_array(author.size(),author_bytes);
-					for(unsigned int i = 0; i < 4; ++i){
-						conn->write(author_bytes[i]);
-					}
+					write_int(author.size(),conn);
 					for(int i = 0; i< author.size(); ++i){
 						conn->write(author[i]);
 					}
 					conn->write(protocol::Protocol::PAR_STRING);
 					std::string content = art_pointer->get_content();	
-					unsigned char content_bytes[4];
-					int_to_byte_array(content.size(),content_bytes);
-					for(unsigned int i = 0; i < 4; ++i){
-						conn->write(content_bytes[i]);
-					}
-					for(int i = 0; i< author.size(); ++i){
-						conn->write(author[i]);
+					write_int(content.size(),conn);
+					for(int i = 0; i< content.size(); ++i){
+						conn->write(content[i]);
 					}
 			}
 				
 		}
-		std::cout<<"answer end"<<std::endl;
+
 		conn->write(protocol::Protocol::ANS_END);
-		
+		std::cout<<"  -Done"<<std::endl;
 	return 0;
 }
 
