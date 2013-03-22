@@ -32,17 +32,56 @@ int main(int argc, char* argv[]){
 		std::cin>>command;
 		int nbr = atoi(command.c_str());
 		switch(nbr){
-			case 1:
-				cch.send_command_list_ng();
+			case 1:{
+				cch.send_command_list_ng();}
 			break;
-			case 2:
-			
+			case 2:{
+				std::cout<<"Please enter the name of the News Group"<<std::endl;
+				std::string name;				
+				std::cin>>name;
+				bool success = cch.send_command_create_ng(name);
+				if(success){
+					std::cout<<"Group created successfully"<<std::endl;
+				}
+				else{
+					std::cerr<<"Group creation failed"<<std::endl;
+				}}
 			break;
-			case 3:
-			
+			case 3:{
+				std::cout<<"Please enter the ID number of the News Group"<<std::endl;
+				std::string id;				
+				std::cin>>id;
+				int id_nbr = atoi(id.c_str()); //if not a number, gives group with id 0
+				bool success = cch.send_command_delete_ng(id_nbr);
+				if(success){
+					std::cout<<"Group deletion successful"<<std::endl;
+				}
+				else{
+					std::cerr<<"Group deletion failed"<<std::endl;
+				}}
 			break;
-			case 4:
-			
+			case 4:{
+				std::cout<<"Please enter the ID number of the News Group"<<std::endl;
+				std::string id;				
+				std::cin>>id;
+				int id_nbr = atoi(id.c_str()); //if not a number, gives group with id 0
+				std::cout<<"Please enter the title of the article"<<std::endl;
+				std::string title;
+				std::cin>>title;
+				std::cout<<"Please enter the author of the article"<<std::endl;
+				std::string author;
+				std::cin>>author;
+				std::cout<<"Please enter the content of the article"<<std::endl;
+				std::string content;
+				std::cin>>content;
+				bool success = cch.send_command_create_art(id_nbr,title,author,content);
+				if(success){
+					std::cout<<"Article creation successful"<<std::endl;
+				}
+				else{
+					std::cerr<<"Group creation failed"<<std::endl;
+				}	
+				}
 			break;
 			case 5:
 			
