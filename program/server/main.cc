@@ -26,8 +26,9 @@ using namespace database;
 in_memory_database* imd;
 
 int main(){	
+
 	imd = new in_memory_database();
-	client_server::Server s(2012);
+	client_server::Server s(2011);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
 		exit(1);
