@@ -27,7 +27,7 @@ in_memory_database* imd;
 
 int main(){	
 	imd = new in_memory_database();
-	client_server::Server s(2019);
+	client_server::Server s(2012);
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
 		exit(1);
@@ -35,8 +35,10 @@ int main(){
 		std::cout <<"Server initialized"<< std::endl;
 	}
 	while(true){
+		std::cout<<"looping"<<std::endl;
 		client_server::Connection* conn = s.waitForActivity();
 		if(conn != 0){
+			std::cout<<"conn is not zero"<<std::endl;
 			try{
 				//do connection stuff
 				int nbr = readCommand(conn);
@@ -202,6 +204,7 @@ int com_delete_ng(client_server::Connection* conn) throw(client_server::Connecti
 	}else{
 		return 1; //Exception
 	}
+	std::cout<<"done"<<std::endl;
 	return 0;
 }
 
@@ -459,6 +462,7 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 			}
 				
 		}
+		std::cout<<"answer end"<<std::endl;
 		conn->write(protocol::Protocol::ANS_END);
 		
 	return 0;
