@@ -1,6 +1,77 @@
 #include "client_connection_handler.h"
+#include <string>
+#include "connection.h"
+#include <vector>
 
 namespace client{
 
+int read_int(client_server::Connection* conn){
+	char c[4];
+	c[0] = conn->read();
+	c[1] = conn->read();
+	c[2] = conn->read();
+	c[3] = conn->read();
+	int i = ((c[0] << 24) | (c[1] << 16) | (c[2] << 8) | c[3]);
+	return i;
+}
+
+void int_to_byte_array(unsigned int n, unsigned char* c){
+	c[0] = (n >> 24) & 0xFF;
+	c[1] = (n >> 16) & 0xFF;
+	c[2] = (n >> 8) & 0xFF;
+	c[3] = n & 0xFF;
+}
+
+std::string read_string(unsigned int n,client_server::Connection* conn){
+	std::vector<char> str;
+	for(unsigned int i = 0; i < n; ++i){
+		str.push_back(conn->read());
+	}
+	std::string ret(str.begin(),str.end());
+	return ret;
+}
+
+void write_string(std::string text, client_server::Connection* conn){
+	for(unsigned int i = 0; i < text.size(); ++i){
+		conn->write(text[i]);
+	}
+}
+
+void write_int(int N, client_server::Connection* conn){
+	unsigned char bytes[4];
+	int_to_byte_array(N, bytes);
+	conn->write(bytes[0]);
+	conn->write(bytes[1]);
+	conn->write(bytes[2]);
+	conn->write(bytes[3]);
+}
+
+bool client_connection_handler::send_command_list_ng(){
+	return false;
+}
+
+bool client_connection_handler::send_command_create_ng(std::string ng_name){
+	return false;
+}
+
+bool client_connection_handler::send_command_delete_ng(unsigned int ng_id){
+	return false;
+}
+
+bool client_connection_handler::send_command_list_art(unsigned int ng_id){
+	return false;
+}
+
+bool client_connection_handler::send_command_create_art(unsigned int ng_id, std::string art_title, std::string art_author, std::string art_text){
+	return false;
+}
+
+bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsigned int art_id){
+	return false;
+}
+
+bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigned int art_id){
+	return false;
+}
 
 }
