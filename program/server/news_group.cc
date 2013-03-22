@@ -70,9 +70,6 @@ article* news_group::get_article_from_name(std::string& comp_title){
 	return dest;
 }
 std::vector<article>* news_group::list_articles(){
-	for(unsigned int i = 0; i<articles.size(); ++i){
-		std::cout<<"title: "<<articles[i].get_title()<<"	id: "<<articles[i].get_id()<<std::endl;
-	}
 	return &articles;
 }
 }

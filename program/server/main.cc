@@ -25,9 +25,13 @@ using namespace database;
 
 in_memory_database* imd;
 
-int main(){	
+int main(int argc, char* argv[]){	
+	if(argc != 2){
+		std::cerr<<"Run format is: "<<argv[0]<<" [port]"<<std::endl;
+		return 1;
+	}
 	imd = new in_memory_database();
-	client_server::Server s(2019);
+	client_server::Server s(atoi(argv[1]));
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
 		exit(1);
@@ -120,18 +124,14 @@ int com_list_ng(client_server::Connection* conn) throw(client_server::Connection
 		write_int(size,conn);
 
 		for(std::vector<news_group>::iterator iter = vec.begin(); iter != vec.end(); iter++){
-			std::cout<<iter->get_name()<<std::endl;
 			unsigned int id = iter->get_id();
 			std::string desc = iter->get_name();
 			unsigned char sBArray[4];
 			int_to_byte_array(id, sBArray);
-//			unsigned char sSArray[4];
-//			string_to_byte_array(desc, sSArray);
 			unsigned int i = 0;
 			conn->write(protocol::Protocol::PAR_NUM);
 			while(i < 4){
 				conn->write(sBArray[i]);
-				std::cout<<sBArray[i]<<std::endl;
 				i++;
 			}
 			i = 0;
@@ -207,6 +207,7 @@ int com_delete_ng(client_server::Connection* conn) throw(client_server::Connecti
 	}else{
 		return 1; //Exception
 	}
+	std::cout<<"  -Done"<<std::endl;
 	return 0;
 }
 
@@ -251,6 +252,7 @@ int com_list_art(client_server::Connection* conn) throw(client_server::Connectio
 			conn->write(protocol::Protocol::ANS_END);
 		}
 	}
+	std::cout<<"  -Done"<<std::endl;
 	return 0;
 }
 
@@ -290,6 +292,7 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 		}
 		std::cout<<"  -Done"<<std::endl;
 		conn->write(protocol::Protocol::ANS_END);
+		std::cout<<"  -Done"<<std::endl;
 		return 0;
 }
 
@@ -361,6 +364,7 @@ int com_create_art(client_server::Connection* conn) throw(client_server::Connect
 		conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 	}
 	conn->write(protocol::Protocol::ANS_END);
+	std::cout<<"  -Done"<<std::endl;
 	return 0;
 }
 
@@ -396,7 +400,6 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 			}
 			else{	
-					std::cout<<"SYSO"<<std::endl;
 					conn->write(protocol::Protocol::ANS_ACK);
 					conn->write(protocol::Protocol::PAR_STRING);
 					std::string title = art_pointer->get_title();
