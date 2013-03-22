@@ -8,7 +8,7 @@ using namespace client;
 using namespace client_server;
 int main(int argc, char* argv[]){
 	if(argc<3){
-		std::cerr<<"Insufficient arguments. Input is host port"<<std::endl;
+		std::cerr<<"Insufficient arguments. command is: "<<argv[0]<<"[host] [port]"<<std::endl;
 		exit(1);
 	}
 	std::cout<<"\t\t\t**************************************\t\t\t\n"<<"\t\t\t* Welcome to News Group Reader 2000  * \t\t\t"<<"\n\t\t\t**************************************\t\t\t"<<std::endl;
@@ -35,8 +35,12 @@ int main(int argc, char* argv[]){
 			case 1:
 				cch.send_command_list_ng();
 			break;
-			case 2:
-			
+			case 2:{
+				std::cout<<"Please write the name of the News Group: "<<std::endl;
+				std::string s; 
+				std::cin>>s;
+				cch.send_command_create_ng(s);
+			}
 			break;
 			case 3:
 			
