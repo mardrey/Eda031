@@ -97,12 +97,27 @@ int main(int argc, char* argv[]){
 					std::cout<<"Article deletion successful"<<std::endl;
 				}
 				else{
-					std::cerr<<"Group deletion failed"<<std::endl;
+					std::cerr<<"Article deletion failed"<<std::endl;
 				}	
 				}
 			break;
-			case 6:
-			
+			case 6:{
+				std::cout<<"Please enter the ID number of the News Group"<<std::endl;
+				std::string id;				
+				std::cin>>id;
+				unsigned int id_nbr = atoi(id.c_str()); //if not a number, gives group with id 0
+				std::cout<<"Please enter the ID number of the Article"<<std::endl;
+				std::string art;				
+				std::cin>>art;
+				unsigned int art_nbr = atoi(art.c_str()); //if not a number, gives group with id 0
+				bool success = cch.send_command_get_art(id_nbr,art_nbr);
+				if(success){
+					std::cout<<"Article found"<<std::endl;
+				}
+				else{
+					std::cerr<<"Article not found"<<std::endl;
+				}	
+				}
 			break;
 			default:
 				std::cerr<<"Not a valid command"<<std::endl;
