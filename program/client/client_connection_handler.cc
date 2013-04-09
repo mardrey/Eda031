@@ -91,6 +91,11 @@ bool client_connection_handler::send_command_list_ng(){
 		std::cerr<<"Expected ans_list_ng, got: "<<com<<std::endl;
 		return false; //something is wrong with server
 	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+		return false;
+	}
 	for(unsigned int t = 0; t < ng_ids.size();++t){
 		std::cout<<ng_ids[t]<<" : "<<ng_names[t]<<std::endl;
 	}
