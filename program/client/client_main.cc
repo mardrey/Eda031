@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
 	}
 	std::cout<<"\t\t\t**************************************\t\t\t\n"<<"\t\t\t* Welcome to News Group Reader 2000  * \t\t\t"<<"\n\t\t\t**************************************\t\t\t"<<std::endl;
 
-	std::cout<<"\n\n\t\t\t\tPlease select a command:\n\n1:\tList News Groups\n2:\tCreate News Group\n3:\tDelete News Group\n4:\tCreate Article\n5:\tDelete Article\n6:\tGet Article"<<std::endl;
+	std::cout<<"\n\n\t\t\t\tPlease select a command:\n\n1:\tList News Groups\n2:\tCreate News Group\n3:\tDelete News Group\n4:\tCreate Article\n5:\tDelete Article\n6:\tGet Article\n7:\tList Article"<<std::endl;
 	std::string command;	
 	
 	const char* host = argv[1];
@@ -120,6 +120,17 @@ int main(int argc, char* argv[]){
 				}	
 				}
 			break;
+			case 7:{
+				std::cout<<"Please enter the ID number of the News Group"<<std::endl;
+				std::string id;				
+				std::cin>>id;
+				unsigned int id_nbr = atoi(id.c_str()); //if not a number, gives group with id 0
+				bool success = cch.send_command_list_art(id_nbr);
+				if(!success){
+					std::cerr<<"articles not found"<<std::endl;
+				}
+			}break;
+
 			default:
 				std::cerr<<"Not a valid command"<<std::endl;
 			break;
