@@ -120,7 +120,23 @@ bool client_connection_handler::send_command_create_ng(std::string ng_name){
 }
 
 bool client_connection_handler::send_command_delete_ng(unsigned int ng_id){
-	return false;
+	conn->write(protocol::Protocol::COM_DELETE_NG);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(ng_id,conn);
+	conn->write(protocol::Protocol::COM_END);
+	unsigned char com = conn->read();
+	if(com != protocol::Protocol::ANS_DELETE_NG){
+		return false; //Something went wrong
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_NAK && com != protocol::Protocol::ERR_NG_ALREADY_EXISTS){
+		return false; //Something went wrong
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		return false; //Something went wrong
+	}
+	return true;
 }
 
 bool client_connection_handler::send_command_list_art(unsigned int ng_id){
