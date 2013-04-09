@@ -120,6 +120,7 @@ bool client_connection_handler::send_command_create_ng(std::string ng_name){
 			std::cerr<<"Expected err_ng_already_exists, got: "<<com<<std::endl;
 			return false;
 		}
+		std::cerr<<"News group already exists"<<com<<std::endl;
 		return false; //Command failed
 	}else if(com != protocol::Protocol::ANS_ACK){
 		std::cerr<<"Expected ans_ack, got: "<<com<<std::endl;
@@ -243,6 +244,7 @@ bool client_connection_handler::send_command_create_art(unsigned int ng_id, std:
 				return false; //Something went wrong
 			}
 		}
+		std::cerr<<"News group does not exist"<<std::endl;
 		return false; //Command failed
 	}
 	com = conn->read();
