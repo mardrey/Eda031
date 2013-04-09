@@ -127,22 +127,27 @@ bool client_connection_handler::send_command_delete_ng(unsigned int ng_id){
 	conn->write(protocol::Protocol::COM_END);
 	unsigned char com = conn->read();
 	if(com != protocol::Protocol::ANS_DELETE_NG){
+		std::cerr<<"DELETE_NG not recieved"<<std::endl;
 		return false; //Something went wrong
 	}
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_ACK){
 		if(com != protocol::Protocol::ANS_NAK){
+			std::cerr<<"Niether NAK nor ACK recieved"<<std::endl;
 			return false; //Something went wrong
 		}else{
 			com = conn->read();
 			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST){
+				std::cerr<<"ERR_NG_DOES_NOT_EXIST not recieved"<<std::endl;
 				return false; //Something went wrong
 			}
-		}
-		return false; //Command failed
+			std::cerr<<"News group does not exist"<<std::endl;
+			return false; //Command failed
+		}		
 	}
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_END){
+		std::cerr<<"ANS_END not recieved"<<std::endl;
 		return false; //Something went wrong
 	}
 	return true;
