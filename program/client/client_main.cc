@@ -31,6 +31,7 @@ int main(int argc, char* argv[]){
 		std::cout<<"in da loop"<<std::endl;
 		std::cin>>command;
 		int nbr = atoi(command.c_str());
+		std::cout<<"COMMAND: "<<nbr<<std::endl;
 		switch(nbr){
 			case 1:{
 				cch.send_command_list_ng();}
@@ -123,6 +124,7 @@ int main(int argc, char* argv[]){
 				std::cerr<<"Not a valid command"<<std::endl;
 			break;
 		}
+		command = "";
 	}
 
 return 0;
