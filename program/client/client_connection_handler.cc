@@ -181,11 +181,19 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 		com = conn->read();
 		if(com == protocol::Protocol::ANS_ACK){
 			com = conn->read();
+			if(com != protocol::Protocol::PAR_NUM){
+				std::cerr<<"Expected number parameter identifier, got: "<<com<<std::endl;
+				return false;
+			}
 			int nbr_arts = read_int(conn);
 			std::cout<<"Number of articles: "<<nbr_arts<<std::endl;
-			com = conn->read();
+		//	com = conn->read();
 			for(unsigned int i = 0; i<nbr_arts;++i){
 				com = conn->read();
+				if(com != protocol::Protocol::PAR_NUM){
+					std::cerr<<"Expected number parameter identifier, got: "<<com<<std::endl;
+					return false;
+				}
 				int art_id = read_int(conn);
 				std::cout<<"Article ID: "<<art_id<<std::endl;
 				com = conn->read();
@@ -197,7 +205,7 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 				std::string content = read_string(length,conn);		
 				std::cout<<content<<std::endl;	
 			}
-			return true;
+			
 		}else if(com==protocol::Protocol::ANS_NAK){
 			std::cerr<<"Article does not exist"<<std::endl;
 			return false; //Command failed
@@ -208,8 +216,7 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 		std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
 		return false;
 	}
-	std::cerr<<"Connection error"<<std::endl;
-	return false;
+	return true;
 }
 
 bool client_connection_handler::send_command_create_art(unsigned int ng_id, std::string art_title, std::string art_author, std::string art_text){
