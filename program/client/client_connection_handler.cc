@@ -147,6 +147,40 @@ bool client_connection_handler::send_command_delete_ng(unsigned int ng_id){
 }
 
 bool client_connection_handler::send_command_list_art(unsigned int ng_id){
+
+	conn->write(protocol::Protocol::COM_LIST_ART);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(ng_id, conn);
+	conn->write(protocol::Protocol::COM_END);
+	unsigned char com = conn->read();
+	if(com!=protocol::Protocol::ANS_LIST_ART){
+		return false;
+	}
+	else{
+		com = conn->read();
+		if(com == protocol::Protocol::ANS_ACK){
+			com = conn->read();
+			int nbr_arts = read_int(conn);
+			std::cout<<"Number of articles: "<<nbr_arts<<std::endl;
+			com = conn->read();
+			for(unsigned int i = 0; i<nbr_arts;++i){
+				com = conn->read();
+				int art_id = read_int(conn);
+				std::cout<<"Article ID: "<<art_id<<std::endl;
+				com = conn->read();
+				if(com!=protocol::Protocol::PAR_STRING){
+					return false;
+				}
+				int length = read_int(conn);
+				std::string content = read_string(length,conn);		
+				std::cout<<content<<std::endl;	
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	return false;
 }
 
