@@ -192,13 +192,39 @@ bool client_connection_handler::send_command_create_art(unsigned int ng_id, std:
 }
 
 bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsigned int art_id){
+	conn->write(protocol::Protocol::COM_DELETE_ART);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(ng_id,conn);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(art_id,conn);
+	conn->write(protocol::Protocol::COM_END);
 
-
-
-	return false;
+	unsigned char com = conn->read();
+	if(com != protocol::Protocol::ANS_DELETE_ART){
+		return false; //Something went wrong
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_ACK){
+		if(com != protocol::Protocol::ANS_NAK){
+			return false; //Something went wrong
+		}else{
+			com = conn->read();
+			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST && com != protocol::Protocol::ERR_ART_DOES_NOT_EXIST){
+				return false; //Something went wrong
+			}
+		}
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		return false; //Something went wrong
+	}
+	return true;
 }
 
 bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigned int art_id){
+	conn->write(protocol::Protocol::COM_GET_ART);
+
+
 	return false;
 }
 
