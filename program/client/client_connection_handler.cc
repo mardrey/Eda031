@@ -203,6 +203,11 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 			return false; //Command failed
 		}
 	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+		return false;
+	}
 	std::cerr<<"Connection error"<<std::endl;
 	return false;
 }
