@@ -180,7 +180,7 @@ bool client_connection_handler::send_command_create_art(unsigned int ng_id, std:
 		}else{
 			com = conn->read();
 			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST){
-				returna false; //Something went wrong
+				return false; //Something went wrong
 			}
 		}
 	}
@@ -192,6 +192,9 @@ bool client_connection_handler::send_command_create_art(unsigned int ng_id, std:
 }
 
 bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsigned int art_id){
+
+
+
 	return false;
 }
 
