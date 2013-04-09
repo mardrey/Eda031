@@ -257,9 +257,56 @@ bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsi
 
 bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigned int art_id){
 	conn->write(protocol::Protocol::COM_GET_ART);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(ng_id,conn);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(art_id,conn);
+	conn->write(protocol::Protocol::COM_END);
+	std::string title;
+	std::string author;
+	std::string text;
+	unsigned char com = conn->read();
+	if(com != protocol::Protocol::ANS_GET_ART){
+		return false; //Something went wrong
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_ACK){
+		if(com != protocol::Protocol::ANS_NAK){
+			return false; //Something went wrong
+		}else{
+			com = conn->read();
+			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST && com != protocol::Protocol::ERR_ART_DOES_NOT_EXIST){
+				return false; //Something went wrong
+			}
+		}
+	}else{
+		com = conn->read();
+		if(com != protocol::Protocol::PAR_STRING){
+			return false; //Something went wrong
+		}
+		unsigned int n = read_int(conn);
+		title = read_string(n,conn);
 
+		com = conn->read();
+		if(com != protocol::Protocol::PAR_STRING){
+			return false; //Something went wrong
+		}
+		n = read_int(conn);
+		author = read_string(n,conn);
 
-	return false;
+		com = conn->read();
+		if(com != protocol::Protocol::PAR_STRING){
+			return false; //Something went wrong
+		}
+		n = read_int(conn);
+		text = read_string(n,conn);
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		return false; //Something went wrong
+	}
+	std::cout<<"Title: "<<title<<"\nAuthor: "<<author<<"\nText: "<<text<<std::endl;
+	return true;
 }
 
 }
