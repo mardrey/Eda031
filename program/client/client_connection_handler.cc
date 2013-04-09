@@ -120,7 +120,30 @@ bool client_connection_handler::send_command_create_ng(std::string ng_name){
 }
 
 bool client_connection_handler::send_command_delete_ng(unsigned int ng_id){
-	return false;
+	conn->write(protocol::Protocol::COM_DELETE_NG);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(ng_id,conn);
+	conn->write(protocol::Protocol::COM_END);
+	unsigned char com = conn->read();
+	if(com != protocol::Protocol::ANS_DELETE_NG){
+		return false; //Something went wrong
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_ACK){
+		if(com != protocol::Protocol::ANS_NAK){
+			return false; //Something went wrong
+		}else{
+			com = conn->read();
+			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST){
+				return false; //Something went wrong
+			}
+		}
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		return false; //Something went wrong
+	}
+	return true;
 }
 
 bool client_connection_handler::send_command_list_art(unsigned int ng_id){
@@ -162,14 +185,80 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 }
 
 bool client_connection_handler::send_command_create_art(unsigned int ng_id, std::string art_title, std::string art_author, std::string art_text){
-	return false;
+	conn->write(protocol::Protocol::COM_CREATE_ART);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(ng_id,conn);
+
+	conn->write(protocol::Protocol::PAR_STRING);
+	write_int(art_title.size(),conn);
+	write_string(art_title,conn);
+
+	conn->write(protocol::Protocol::PAR_STRING);
+	write_int(art_author.size(),conn);
+	write_string(art_author,conn);
+
+	conn->write(protocol::Protocol::PAR_STRING);
+	write_int(art_text.size(),conn);
+	write_string(art_text,conn);
+
+	conn->write(protocol::Protocol::COM_END);
+
+	unsigned char com = conn->read();
+	if(com != protocol::Protocol::ANS_CREATE_ART){
+		return false; //Something went wrong
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_ACK){
+		if(com != protocol::Protocol::ANS_NAK){
+			return false; //Something wrong
+		}else{
+			com = conn->read();
+			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST){
+				return false; //Something went wrong
+			}
+		}
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		return false; //Something is wrong
+	}
+	return true;
 }
 
 bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsigned int art_id){
-	return false;
+	conn->write(protocol::Protocol::COM_DELETE_ART);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(ng_id,conn);
+	conn->write(protocol::Protocol::PAR_NUM);
+	write_int(art_id,conn);
+	conn->write(protocol::Protocol::COM_END);
+
+	unsigned char com = conn->read();
+	if(com != protocol::Protocol::ANS_DELETE_ART){
+		return false; //Something went wrong
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_ACK){
+		if(com != protocol::Protocol::ANS_NAK){
+			return false; //Something went wrong
+		}else{
+			com = conn->read();
+			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST && com != protocol::Protocol::ERR_ART_DOES_NOT_EXIST){
+				return false; //Something went wrong
+			}
+		}
+	}
+	com = conn->read();
+	if(com != protocol::Protocol::ANS_END){
+		return false; //Something went wrong
+	}
+	return true;
 }
 
 bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigned int art_id){
+	conn->write(protocol::Protocol::COM_GET_ART);
+
+
 	return false;
 }
 
