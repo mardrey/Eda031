@@ -109,6 +109,7 @@ bool client_connection_handler::send_command_create_ng(std::string ng_name){
 		if(com != protocol::Protocol::ERR_NG_ALREADY_EXISTS){
 			return false;
 		}
+		return false; //Command failed
 	}else if(com != protocol::Protocol::ANS_ACK){
 		return false;
 	}
@@ -138,6 +139,7 @@ bool client_connection_handler::send_command_delete_ng(unsigned int ng_id){
 				return false; //Something went wrong
 			}
 		}
+		return false; //Command failed
 	}
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_END){
@@ -178,7 +180,7 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 			return true;
 		}
 		else {
-			return false;
+			return false; //Command failed
 		}
 	}
 	return false;
@@ -205,22 +207,26 @@ bool client_connection_handler::send_command_create_art(unsigned int ng_id, std:
 
 	unsigned char com = conn->read();
 	if(com != protocol::Protocol::ANS_CREATE_ART){
+		std::cerr<<"Did not recieve create response from server"<<std::endl;
 		return false; //Something went wrong
 	}
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_ACK){
 		if(com != protocol::Protocol::ANS_NAK){
+			std::cerr<<"Did not recieve not_acknowledged response from server"<<std::endl;
 			return false; //Something wrong
 		}else{
 			com = conn->read();
 			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST){
+				std::cerr<<"Did not recieve ng_does_not_exists response from server"<<std::endl;
 				return false; //Something went wrong
 			}
 		}
+		return false; //Command failed
 	}
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_END){
-		return false; //Something is wrong
+		return false; //Something went wrong
 	}
 	return true;
 }
@@ -247,6 +253,7 @@ bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsi
 				return false; //Something went wrong
 			}
 		}
+		return false; //Command failed
 	}
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_END){
@@ -279,6 +286,7 @@ bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigne
 				return false; //Something went wrong
 			}
 		}
+		return false; //Command failed
 	}else{
 		com = conn->read();
 		if(com != protocol::Protocol::PAR_STRING){
