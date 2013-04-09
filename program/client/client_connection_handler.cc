@@ -178,11 +178,12 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 				std::cout<<content<<std::endl;	
 			}
 			return true;
-		}
-		else {
+		}else if(com==protocol::Protocol::ANS_NAK){
+			std::cerr<<"Article does not exist"<<std::endl;
 			return false; //Command failed
 		}
 	}
+	std::cerr<<"Connection error"<<std::endl;
 	return false;
 }
 

@@ -79,7 +79,7 @@ int main(int argc, char* argv[]){
 					std::cout<<"Article creation successful"<<std::endl;
 				}
 				else{
-					std::cerr<<"Group creation failed"<<std::endl;
+					std::cerr<<"Article creation failed"<<std::endl;
 				}	
 				}
 			break;
