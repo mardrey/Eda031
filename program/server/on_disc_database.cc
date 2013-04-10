@@ -7,18 +7,42 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 
 namespace database{
 
 	bool make_dir(std::string name){
-		std::string beg_path = "./";
-		std::string local_path = beg_path.append(name);
-		int succ = mkdir(local_path.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
+		int succ = mkdir(name.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
 		if(succ != 0){
 			std::cerr<<"Could not create directory "<<name<<std::endl;
 			return false; 
 		}
 		return true;
+	}
+
+	unsigned int get_unused_index(std::string index_file_path){
+		std::ifstream file_exists;
+		file_exists.open(index_file_path.c_str());
+		if(!file_exists){
+			std::ofstream index_file;
+			index_file.open(index_file_path.c_str(),std::fstream::app);
+			index_file<<"0\n";
+			index_file.close();
+			return 0;
+		}else{
+			unsigned int index;
+			file_exists >> index;
+			while(!file_exists.eof()){
+				file_exists >> index;
+			}
+			file_exists.close();
+			index++;
+			std::ofstream index_file_out;
+			index_file_out.open(index_file_path.c_str(),std::fstream::app);
+			index_file_out<<index;
+			index_file_out.close();
+			return index;
+		}
 	}
 
 	on_disc_database::on_disc_database(){
@@ -42,10 +66,24 @@ namespace database{
 	}
 
 	int on_disc_database::add_news_group(std::string& name){
+		std::string indices_text = path+"/used_indices.txt";
+		unsigned int id = get_unused_index(indices_text);
 		root = opendir(path.c_str());
-		
-
-		return 0; //Everything went ok
+		struct dirent *entry = readdir(root);
+		while(entry != NULL){
+			if(entry->d_type == DT_DIR && entry->d_name == name){
+				std::cerr<<"name is already in use"<<std::endl;
+				return -2; 
+			}
+			entry = readdir(root);
+		}
+		std::string create_dir_name = path.append("/"+id);
+		closedir(root);
+		if(make_dir(create_dir_name)){
+			return 0; //Everything went ok
+		}
+		std::cerr<<"could not create directory for news group"<<std::endl;
+		return -1;
 	}
 
 	std::vector<news_group> on_disc_database::list_news_groups(){
