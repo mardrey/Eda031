@@ -83,7 +83,25 @@
 	}
 
 	std::vector<news_group> on_disc_database::list_news_groups(){
+		root = opendir(path.c_str());
+		struct dirent *entry = readdir(root);
 		std::vector<news_group> groups;
+		while(entry != NULL){
+			if(entry->d_type == DT_DIR){
+				std::string line = entry->d_name;
+				std::stringstream split_stream(line);
+				std::string temp_string;
+				std::string temp_string2;
+				getline(split_stream,temp_string,':');
+				getline(split_stream,temp_string2,':');
+				if(temp_string != "" && temp_string2 != ""){
+				news_group ng(temp_string2,atoi(temp_string.c_str()));
+				groups.push_back(ng);
+				}
+			}
+			entry = readdir(root);
+		}
+		closedir(root);
 		return groups;
 	}
 
