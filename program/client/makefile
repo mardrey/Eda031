@@ -8,7 +8,7 @@
 
 CC		  = g++
 CXX       = g++
-CXXFLAGS  = -pipe -O2 -Wall -W -ansi -pedantic-errors
+CXXFLAGS  = -pipe -Wall -W -ansi -pedantic-errors
 CXXFLAGS += -Wmissing-braces -Wparentheses -Wold-style-cast
 LDFLAGS	  =
 LDLIBS    = -L. -lclientserver
