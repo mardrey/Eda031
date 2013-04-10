@@ -5,7 +5,6 @@
 #include <vector>
 #include <climits>
 #include <string>
-#include <vector>
 #include "article.h"
 
 
