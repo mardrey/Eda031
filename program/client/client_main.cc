@@ -88,8 +88,8 @@ int main(int argc, char* argv[]){
 				std::getline(std::cin,content);
 				
 				std::cout<<"content: "<<content<<std::endl;
-				std::cout<<"kopfweh"<<std::endl;
-				bool success = cch.send_command_create_art(id_nbr,content,title,author);
+			
+				bool success = cch.send_command_create_art(id_nbr,title,author,content);
 				if(success){
 					std::cout<<"Article creation successful"<<std::endl;
 				}
