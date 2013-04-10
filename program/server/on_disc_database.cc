@@ -7,9 +7,15 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
+
+#include <sstream>
 
 namespace database{
+	unsigned int get_unused_index(std::string path){
 
+	return 0;
+	}
 	bool make_dir(std::string name){
 		std::string beg_path = "./";
 		std::string local_path = beg_path.append(name);
@@ -58,7 +64,22 @@ namespace database{
 	}
 
 	bool on_disc_database::add_article(unsigned int id, std::string& title, std::string& author, std::string& content){
-		return false;
+		std::stringstream ss1;
+		ss1<<path<<"/"<<id;
+		std::string ng_path = ss1.str();	
+		DIR *dir = opendir(ng_path.c_str());	
+		if(dir==NULL){
+			std::cerr<<"News group does not exist"<<std::endl;
+			return false;
+		}
+		unsigned int highest = get_unused_index(ng_path);
+		std::stringstream ss2;
+		ss2<<ng_path<<"/"<<highest;
+		std::string art_path = ss2.str();
+		std::ofstream ofs;
+		ofs.open(art_path.c_str());
+		ofs<<title<<"\n\n"<<author<<"\n\n"<<content;
+ 		ofs.close();
 	}
 
 	int on_disc_database::delete_article(unsigned int group_id, unsigned int article_id){
