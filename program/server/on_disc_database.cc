@@ -6,12 +6,14 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <iostream>
 
 namespace database{
 
 	bool make_dir(std::string name){
-		std::string path = "./"<<name;
-		int succ = mkdir(pat.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
+		std::string beg_path = "./";
+		std::string local_path = beg_path.append(name);
+		int succ = mkdir(local_path.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
 		if(succ != 0){
 			std::cerr<<"Could not create directory "<<name<<std::endl;
 			return false; 
