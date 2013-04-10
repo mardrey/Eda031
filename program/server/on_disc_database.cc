@@ -93,10 +93,20 @@
 
 	bool on_disc_database::add_article(unsigned int id, std::string& title, std::string& author, std::string& content){
 		std::stringstream ss1;
-		ss1<<path<<"/"<<id;
+		DIR *dir = opendir(path);
+		struct dirent *entry = readdir(dir);
+		bool found = false;
+		while(entry!=null && !found){
+			if(entry->d_type == DT_DIR){
+				std::string d_name = entry->d_name;
+				if()
+			}
+			entry = readdir(dir);
+		}
+		//ss1<<path<<"/"<<id;
 		std::string ng_path = ss1.str();	
-		DIR *dir = opendir(ng_path.c_str());	
-		if(dir==NULL){
+		DIR *ng_dir = opendir(ng_path.c_str());	
+		if(ng_dir==NULL){
 			std::cerr<<"News group does not exist"<<std::endl;
 			return false;
 		}
