@@ -8,6 +8,17 @@
 #include <stdlib.h>
 
 namespace database{
+
+	bool make_dir(std::string name){
+		std::string path = "./"<<name;
+		int succ = mkdir(pat.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
+		if(succ != 0){
+			std::cerr<<"Could not create directory "<<name<<std::endl;
+			return false; 
+		}
+		return true;
+	}
+
 	on_disc_database::on_disc_database(){
 		path = "./database";
 		root = opendir(path.c_str());
@@ -29,6 +40,7 @@ namespace database{
 	}
 
 	int on_disc_database::add_news_group(std::string& name){
+		root = opendir(path.c_str());
 		
 
 		return 0; //Everything went ok
