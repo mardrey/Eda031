@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 namespace database{
 
@@ -40,6 +41,7 @@ namespace database{
 			std::ofstream index_file_out;
 			index_file_out.open(index_file_path.c_str(),std::fstream::app);
 			index_file_out<<index;
+			index_file_out<<"\n";
 			index_file_out.close();
 			return index;
 		}
@@ -68,17 +70,11 @@ namespace database{
 	int on_disc_database::add_news_group(std::string& name){
 		std::string indices_text = path+"/used_indices.txt";
 		unsigned int id = get_unused_index(indices_text);
-		root = opendir(path.c_str());
-		struct dirent *entry = readdir(root);
-		while(entry != NULL){
-			if(entry->d_type == DT_DIR && entry->d_name == name){
-				std::cerr<<"name is already in use"<<std::endl;
-				return -2; 
-			}
-			entry = readdir(root);
-		}
-		std::string create_dir_name = path.append("/"+id);
-		closedir(root);
+		std::ostringstream convert;
+		convert<<id;
+		std::string id_str;
+		id_str = convert.str();
+		std::string create_dir_name = (path+"/"+id_str+":"+name);
 		if(make_dir(create_dir_name)){
 			return 0; //Everything went ok
 		}
