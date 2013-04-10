@@ -93,7 +93,7 @@
 				std::string temp_string;
 				std::string temp_string2;
 				getline(split_stream,temp_string,':');
-				getline(split_stream,temp_string2,':');
+				getline(split_stream,temp_string2);
 				if(temp_string != "" && temp_string2 != ""){
 				news_group ng(temp_string2,atoi(temp_string.c_str()));
 				groups.push_back(ng);
@@ -111,29 +111,40 @@
 
 	bool on_disc_database::add_article(unsigned int id, std::string& title, std::string& author, std::string& content){
 		std::stringstream ss1;
-		DIR *dir = opendir(path);
+		std::string d_name;
+		DIR *dir = opendir(path.c_str());
 		struct dirent *entry = readdir(dir);
 		bool found = false;
-		while(entry!=null && !found){
+		while(entry!=NULL && !found){
 			if(entry->d_type == DT_DIR){
-				std::string d_name = entry->d_name;
-				if()
+				d_name = entry->d_name;
+				std::stringstream split_stream(d_name);
+				std::string temp_string;
+				getline(split_stream,temp_string,':');
+				int ng_id = atoi(temp_string.c_str());
+				if(ng_id==id){
+					found = true;
+				}
 			}
 			entry = readdir(dir);
 		}
-		//ss1<<path<<"/"<<id;
+		if(!found){
+			std::cerr<<"News group does not exist"<<std::endl;
+			return false;
+		}
+		ss1<<path<<"/"<<d_name;
 		std::string ng_path = ss1.str();	
 		DIR *ng_dir = opendir(ng_path.c_str());	
 		if(ng_dir==NULL){
 			std::cerr<<"News group does not exist"<<std::endl;
 			return false;
 		}
-		unsigned int highest = get_unused_index(ng_path);
+		unsigned int highest = get_unused_index(ng_path+"/used_indices.txt");
 		std::stringstream ss2;
 		ss2<<ng_path<<"/"<<highest;
 		std::string art_path = ss2.str();
 		std::ofstream ofs;
-		ofs.open(art_path.c_str());
+		ofs.open((art_path+":"+title+".art").c_str());
 		ofs<<title<<"\n\n"<<author<<"\n\n"<<content;
  		ofs.close();
 	}
