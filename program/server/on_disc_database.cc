@@ -1,3 +1,8 @@
+#include "on_disc_database.h"
+#include <string>
+#include "news_group.h"
+#include "article.h"
+#include "database.h"
 
 namespace database{
 	on_disc_database::on_disc_database(){

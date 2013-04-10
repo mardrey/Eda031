@@ -1,6 +1,7 @@
 #include "database.h"
 #include <iostream>
 #include "in_memory_database.h"
+#include "on_disc_database.h"
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
@@ -24,7 +25,6 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 using namespace database;
 
 in_memory_database* imd;
-
 
 int main(int argc, char* argv[]){	
 	if(argc != 2){
