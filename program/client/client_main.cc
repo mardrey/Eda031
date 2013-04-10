@@ -3,7 +3,7 @@
 #include "connection.h"
 #include "client_connection_handler.h"
 #include <string>
-
+#include <sstream>
 using namespace client;
 using namespace client_server;
 int main(int argc, char* argv[]){
@@ -62,20 +62,34 @@ int main(int argc, char* argv[]){
 				}}
 			break;
 			case 4:{
+				std::string foo;
+				std::string id;	
+				std::string title;
+				std::string author;
+				std::string  content;
+				std::getline(std::cin,foo);
 				std::cout<<"Please enter the ID number of the News Group"<<std::endl;
-				std::string id;				
-				std::cin>>id;
+							
+				std::getline(std::cin,id);
 				unsigned int id_nbr = atoi(id.c_str()); //if not a number, gives group with id 0
 				std::cout<<"Please enter the title of the article"<<std::endl;
-				std::string title;
-				std::cin>>title;
+				
+				std::getline(std::cin,title);
+			
+			
+				std::cout<<"title: "<<title<<std::endl;
 				std::cout<<"Please enter the author of the article"<<std::endl;
-				std::string author;
-				std::cin>>author;
-				std::cout<<"Please enter the content of the article"<<std::endl;
-				std::string content;
-				std::cin>>content;
-				bool success = cch.send_command_create_art(id_nbr,title,author,content);
+				
+				std::getline(std::cin,author);
+			
+				std::cout<<"author: "<<author<<std::endl;
+				std::cout<<"Please enter the content of the article"<<std::endl;	
+				
+				std::getline(std::cin,content);
+				
+				std::cout<<"content: "<<content<<std::endl;
+				std::cout<<"kopfweh"<<std::endl;
+				bool success = cch.send_command_create_art(id_nbr,content,title,author);
 				if(success){
 					std::cout<<"Article creation successful"<<std::endl;
 				}

@@ -1,5 +1,6 @@
 #include <string>
 #include "article.h"
+
 namespace database{
 
 
@@ -8,6 +9,7 @@ namespace database{
 		id = i;
 		title = titl;
 		author = aut;
+
 	}
 	article::~article(){}
 

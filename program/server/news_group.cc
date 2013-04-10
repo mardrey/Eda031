@@ -21,7 +21,7 @@ std::string news_group::get_name(){
 	return name;
 }
 
-void news_group::new_article(std::string& content, std::string& title, std::string& author){
+void news_group::new_article(std::string& title, std::string& author, std::string& content){
 	
 	if(article_ids<UINT_MAX){
 		article a(content, article_ids, title, author);
