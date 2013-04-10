@@ -3,6 +3,7 @@
 #include "news_group.h"
 #include "article.h"
 #include "database.h"
+#include <dirent.h>
 
 namespace database{
 	class on_disc_database : database{
@@ -18,6 +19,8 @@ namespace database{
 			article* get_article(unsigned int group_id, unsigned int article_id);
 			news_group* get_news_group(unsigned int id);
 		private:
+			std::string path;
+			DIR *root;
 	};
 
 }

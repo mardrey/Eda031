@@ -24,14 +24,16 @@ int readCommand(client_server::Connection* conn) throw(client_server::Connection
 //using namespace client_server;
 using namespace database;
 
-in_memory_database* imd;
+
+bool on_disc = true;
+on_disc_database* imd;
 
 int main(int argc, char* argv[]){	
 	if(argc != 2){
 		std::cerr<<"Run format is: "<<argv[0]<<" [port]"<<std::endl;
 		return 1;
 	}
-	imd = new in_memory_database();
+	imd = new on_disc_database();
 	client_server::Server s(atoi(argv[1]));
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
