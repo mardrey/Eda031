@@ -9,11 +9,11 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
+	namespace database{
 	bool make_dir(std::string name){
 		int succ = mkdir(name.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
 		if(succ != 0){
-			std::cerr<<"Could not create directory "<<name<<std::endl;
+			std::cerr<<"Could not create directory  "<<name<<std::endl;
 			return false; 
 		}
 		return true;
