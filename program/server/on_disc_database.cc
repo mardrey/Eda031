@@ -9,8 +9,46 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
+#include <stdio.h>
 	namespace database{
+
+	bool delete_file_dir_entry(std::string& path){
+		std::fstream is_file;
+		is_file.open(path.c_str());
+		if(is_file){
+			if(remove(path.c_str()) != 0){
+				std::cerr<<"Deletion of file "<<path<<" was unsuccessful"<<std::endl;
+				is_file.close();
+				return false;
+			}else{
+				is_file.close();
+				return true;
+			}
+		}
+		std::cout<<path<<" was not a file"<<std::endl;
+		if(rmdir(path.c_str()) != -1){
+			return true;
+		}else{
+			DIR *root = opendir(path.c_str());
+			if(root == NULL){
+				std::cerr<<"could not open directory"<<std::endl;
+				return false;
+			}
+			struct dirent *entry = readdir(root);
+			while(entry != NULL){
+				std::string nome = entry->d_name;
+				if(nome != "." && nome != ".." && nome != "" && nome[0] != '.'){
+					std::string name = path + "/" + (nome);
+					if(!delete_file_dir_entry(name)){
+					//	std::cerr<<"Deletion of "<<(name)<<" was unsuccessful"<<std::endl;
+						return false;
+					}
+				}
+				entry = readdir(root);
+			}
+			return (rmdir(path.c_str()) != -1);
+		}
+	}
 
 	bool make_dir(std::string name){
 		int succ = mkdir(name.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
@@ -98,6 +136,7 @@
 				news_group ng(temp_string2,atoi(temp_string.c_str()));
 				groups.push_back(ng);
 				}
+
 			}
 			entry = readdir(root);
 		}
@@ -106,6 +145,27 @@
 	}
 
 	bool on_disc_database::delete_news_group(unsigned int id){
+		root = opendir(path.c_str());
+		struct dirent *entry = readdir(root);
+		while(entry != NULL){
+			if(entry->d_type == DT_DIR){
+				std::string line = entry->d_name;
+				std::stringstream split_stream(line);
+				std::string temp_string;
+				std::string temp_string2;
+				getline(split_stream,temp_string,':');
+				getline(split_stream,temp_string2);
+				if(temp_string != "" && temp_string2 != ""){
+					std::string name = (path + "/" + (entry->d_name));
+					if(atoi(temp_string.c_str())==id && temp_string != "." && temp_string != ".." && temp_string[0] != '.'){
+						std::cout<<"entering delete"<<std::endl;
+						bool res = delete_file_dir_entry(name);
+						return res;
+					}
+				}
+			}
+			entry = readdir(root);
+		}
 		return false;
 	}
 
@@ -121,9 +181,11 @@
 				std::stringstream split_stream(d_name);
 				std::string temp_string;
 				getline(split_stream,temp_string,':');
-				int ng_id = atoi(temp_string.c_str());
-				if(ng_id==id){
-					found = true;
+				if(temp_string != "" && temp_string != "." && temp_string != ".." && temp_string[0] != '.'){
+					int ng_id = atoi(temp_string.c_str());
+					if(ng_id==id){
+						found = true;
+					}
 				}
 			}
 			entry = readdir(dir);
