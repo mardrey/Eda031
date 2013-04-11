@@ -52,6 +52,29 @@
 		}
 	}
 
+	article* read_article(std::string& path, unsigned int id){
+		std::ifstream ifs;
+		ifs.open(path.c_str());
+		if(!ifs){
+			std::cerr<<"could not open file"<<std::endl;
+			return NULL;
+		}
+		std::string blank;
+		std::string title;
+		ifs>>title;
+		std::string author;
+		ifs>>author;
+		std::string content;
+		ifs>>content;
+		while(!ifs.eof()){
+			std::string line;
+			ifs>>line;
+			content.append(line);
+		}
+		article* art = new article(id,title,author,content);
+		return art;
+	}
+
 	bool make_dir(std::string name){
 		int succ = mkdir(name.c_str(), S_IRWXU|S_IRGRP|S_IXGRP);
 		if(succ != 0){
@@ -275,6 +298,8 @@
 	}
 	article* on_disc_database::get_article(unsigned int group_id, unsigned int article_id){
 
+
+		std::cout<<"in on disc get art"<<std::endl;
 		std::stringstream ss1;
         std::string d_name_ng;
         std::string d_name_art;
@@ -309,12 +334,14 @@
         bool art_found = false;
         while(!art_found){
             entry2 = readdir(ng_dir);
+            std::string name = entry2->d_name;
             if(entry2==NULL){
             	std::cerr<<"Could not find article"<<std::endl;
                 return NULL;
             }
-            if(entry2->d_name!="."  && (entry2->d_name!="..") ){
-                d_name_art = entry2->d_name;
+            if(name!="."  && (name!="..") && (name)[0]!='.' && name != "used_indices.txt"){
+                d_name_art = name;
+                std::cout<<d_name_art<<std::endl;
                 std::stringstream split_stream(d_name_art);
                 std::string temp_string;
                 getline(split_stream,temp_string,':');
@@ -328,55 +355,83 @@
             std::cerr<<"article was not found"<<std::endl;
             return NULL;
         }
-        std::ifstream ifs;
-        ifs.open(((ng_path+"/"+d_name_art).c_str()));
-        std::string title;
-        std::string blank;
-        std::string author;
-        std::string content;           
-        ifs>>title;
-        ifs>>blank;
-        ifs>>author;
-        ifs>>blank;
-        while(!ifs.eof()){
-            std::string temp;
-            ifs>>temp;
-            content+=temp;
-        }
-        std::cout<<"title: "<<title<<std::endl;
-        std::cout<<"author: "<<author<<std::endl;
-        std::cout<<"content: "<<content<<std::endl;
-		
-        article art(article_id,title,author,content);
-		return &art;
+        std::cout<<"reading file"<<std::endl;
+        std::string art_path = (ng_path+"/"+d_name_art);
+        article* art = read_article(art_path,article_id);
+
+		return art;
 
 
 	}
 	news_group* on_disc_database::get_news_group(unsigned int id){
+		std::cout<<"in get news group"<<std::endl;
 		root = opendir(path.c_str());
 		dirent *entry = readdir(root);
 		std::string ng_name;
-		news_group ng;
+		news_group* ng;
 		bool found_ng = false;
 		while(entry != NULL && !found_ng){
 			std::string name = entry->d_name;
-			if(name != "" && name != "." && name != ".." && name[0] != '.' && entry->d_type = DT_DIR){
+			if(name != "" && name != "." && name != ".." && name[0] != '.' && entry->d_type == DT_DIR){
 				std::stringstream split_stream(name);
 				std::string id_string;
 				getline(split_stream,id_string,':');
-				int ng_id = atoi(id_string);
+				int ng_id = atoi(id_string.c_str());
 				if(ng_id == id){
 					getline(split_stream,ng_name);
-					news_group found(id,ng_name);
-					ng = found;
+					ng = new news_group(ng_name, id);
 					found_ng = true;
 				}
 			}
 			entry = readdir(root);
 		}
+		if(!found_ng || ng == NULL || ng == 0){
+			std::cout<<"could not found news group"<<std::endl;
+			return NULL;
+		}
+		std::cout<<"in the middle"<<std::endl;
+		std::stringstream int_con;
+		int_con<<id;
+		std::string id_string;
+		std::cout<<"in the middle1.5"<<std::endl;
+		id_string = int_con.str();
+		std::string ng_path = path+"/"+id_string+":"+ng_name;
+		std::cout<<"in the middle2"<<std::endl;
+		closedir(root);
+		root = opendir(ng_path.c_str());
+		std::cout<<ng_path<<std::endl;
+		if(root == NULL){
+			std::cerr<<"could not open news group"<<std::endl;
+			return NULL;
+		}
+		std::cout<<"in the middle2.25"<<std::endl;
+		entry = readdir(root);
+		std::cout<<"in the middle2.5"<<std::endl;
+		while(entry != NULL){
+			std::string name = entry->d_name;
+			if(name != "" && name != "." && name != ".." && name[0] != '.' && name != "used_indices.txt"){
+				std::cout<<"in the beginning, name: "<<name<<std::endl;
+				std::stringstream ss(name);
+				std::string temp_string;
+				getline(ss,temp_string,':');
+				unsigned int art_id = atoi(temp_string.c_str());
+				std::string art_path;
+				art_path = path+"/"+id_string+":"+ng_name+"/"+name;
+				std::cout<<"before read_art"<<std::endl;
+				article* art = read_article(art_path, art_id);
+				if(art == NULL || art == 0){
+					std::cout<<"article is null"<<std::endl;
+					return NULL;
+				}
+				std::cout<<"after read_art: "<<(ng->get_name())<<art->get_title()<<std::endl;
 
-		root = opendir((path+id+":"+ng_name).c_str());
-
-		return NULL;
+				ng->add_article(*art);
+				std::cout<<"after add_art"<<std::endl;
+			}
+			std::cout<<"new entry time"<<std::endl;
+			entry = readdir(root);
+		}
+		std::cout<<"in the end"<<std::endl;
+		return ng;
 	}
 }

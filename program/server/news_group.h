@@ -17,8 +17,8 @@ public:
 	std::vector<article>* list_articles();
 	article* get_article_from_id(unsigned int art_id);
 	article* get_article_from_name(std::string& comp_title);
-private:
 	void add_article(article a);
+private:
 	std::vector<article> articles;
 	unsigned int id;
 	unsigned int article_ids;

@@ -402,6 +402,7 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 		}
 		else{
+			delete(ng_pointer);
 			database::article* art_pointer= imd->get_article(group, article);
 			if(art_pointer == 0){ 
 
@@ -428,6 +429,7 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 					for(unsigned int i = 0; i< content.size(); ++i){
 						conn->write(content[i]);
 					}
+				delete(art_pointer);
 			}
 				
 		}

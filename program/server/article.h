@@ -7,7 +7,7 @@
 namespace database{
 class article{
 public:
-	article(std::string cont, unsigned int i,std::string titl, std::string aut);
+	article(unsigned int i, std::string titl, std::string aut, std::string cont);
 	~article();
 	std::string get_content();
 	unsigned int get_id();
