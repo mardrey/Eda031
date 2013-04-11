@@ -247,7 +247,6 @@
         bool art_found = false;
 		while(!art_found){
 			entry2 = readdir(ng_dir);
-			std::cout<<"errno is: "<<errno<<std::endl;
 			if(entry2==NULL){
 				return 1;
 			}

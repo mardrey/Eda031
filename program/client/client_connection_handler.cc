@@ -121,6 +121,11 @@ bool client_connection_handler::send_command_create_ng(std::string ng_name){
 			return false;
 		}
 		std::cerr<<"News group already exists"<<com<<std::endl;
+		com = conn->read();
+		if(com != protocol::Protocol::ANS_END){
+			std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+			return false; //Something went wrong
+		}
 		return false; //Command failed
 	}else if(com != protocol::Protocol::ANS_ACK){
 		std::cerr<<"Expected ans_ack, got: "<<com<<std::endl;
@@ -156,6 +161,11 @@ bool client_connection_handler::send_command_delete_ng(unsigned int ng_id){
 				return false; //Something went wrong
 			}
 			std::cerr<<"News group does not exist"<<std::endl;
+			com = conn->read();
+			if(com != protocol::Protocol::ANS_END){
+				std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+				return false; //Something went wrong
+			}
 			return false; //Command failed
 		}		
 	}
@@ -209,6 +219,11 @@ bool client_connection_handler::send_command_list_art(unsigned int ng_id){
 			
 		}else if(com==protocol::Protocol::ANS_NAK){
 			std::cerr<<"Article does not exist"<<std::endl;
+			com = conn->read();
+			if(com != protocol::Protocol::ANS_END){
+				std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+				return false; //Something went wrong
+			}
 			return false; //Command failed
 		}
 	}
@@ -257,6 +272,11 @@ bool client_connection_handler::send_command_create_art(unsigned int ng_id, std:
 			}
 		}
 		std::cerr<<"News group does not exist"<<std::endl;
+		com = conn->read();
+		if(com != protocol::Protocol::ANS_END){
+			std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+			return false; //Something went wrong
+		}
 		return false; //Command failed
 	}
 	com = conn->read();
@@ -291,6 +311,11 @@ bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsi
 				std::cerr<<"Expected number err_ng_does_not_exist OR err_art_does_not_exist, got: "<<com<<std::endl;
 				return false; //Something went wrong
 			}
+		}
+		com = conn->read();
+		if(com != protocol::Protocol::ANS_END){
+			std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+			return false; //Something went wrong
 		}
 		return false; //Command failed
 	}
@@ -328,6 +353,11 @@ bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigne
 				std::cerr<<"Expected err_ng_does_not_exist OR err_art_does_not_exist got: "<<com<<std::endl;
 				return false; //Something went wrong
 			}
+		}
+		com = conn->read();
+		if(com != protocol::Protocol::ANS_END){
+			std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
+			return false; //Something went wrong
 		}
 		return false; //Command failed
 	}else{
