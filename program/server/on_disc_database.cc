@@ -348,6 +348,30 @@
         return NULL;
 	}
 	news_group* on_disc_database::get_news_group(unsigned int id){
+		root = opendir(path.c_str());
+		dirent *entry = readdir(root);
+		std::string ng_name;
+		news_group ng;
+		bool found_ng = false;
+		while(entry != NULL && !found_ng){
+			std::string name = entry->d_name;
+			if(name != "" && name != "." && name != ".." && name[0] != '.' && entry->d_type = DT_DIR){
+				std::stringstream split_stream(name);
+				std::string id_string;
+				getline(split_stream,id_string,':');
+				int ng_id = atoi(id_string);
+				if(ng_id == id){
+					getline(split_stream,ng_name);
+					news_group found(id,ng_name);
+					ng = found;
+					found_ng = true;
+				}
+			}
+			entry = readdir(root);
+		}
+
+		root = opendir((path+id+":"+ng_name).c_str());
+
 		return NULL;
 	}
 }
