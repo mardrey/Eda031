@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "article.h"
 #include <stdio.h>
 
 	namespace database{
@@ -273,7 +274,7 @@
 		return 0;
 	}
 	article* on_disc_database::get_article(unsigned int group_id, unsigned int article_id){
-		std::cout<<"borjan på getart"<<std::endl;
+
 		std::stringstream ss1;
         std::string d_name_ng;
         std::string d_name_art;
@@ -324,7 +325,7 @@
             }
         }
         if(!art_found){
-            std::cerr<<"article was not found, tardass"<<std::endl;
+            std::cerr<<"article was not found"<<std::endl;
             return NULL;
         }
         std::ifstream ifs;
@@ -345,7 +346,11 @@
         std::cout<<"title: "<<title<<std::endl;
         std::cout<<"author: "<<author<<std::endl;
         std::cout<<"content: "<<content<<std::endl;
-        return NULL;
+		
+        article art(article_id,title,author,content);
+		return &art;
+
+
 	}
 	news_group* on_disc_database::get_news_group(unsigned int id){
 		root = opendir(path.c_str());

@@ -4,7 +4,7 @@
 namespace database{
 
 
-	article::article(std::string cont, unsigned int i,std::string titl, std::string aut){
+	article::article(unsigned int i,std::string titl, std::string aut,std::string cont){
 		content = cont;
 		id = i;
 		title = titl;
