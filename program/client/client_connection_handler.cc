@@ -327,7 +327,7 @@ bool client_connection_handler::send_command_delete_art(unsigned int ng_id, unsi
 	return true;
 }
 
-bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigned int art_id){
+int client_connection_handler::send_command_get_art(unsigned int ng_id, unsigned int art_id){
 	conn->write(protocol::Protocol::COM_GET_ART);
 	conn->write(protocol::Protocol::PAR_NUM);
 	write_int(ng_id,conn);
@@ -340,31 +340,35 @@ bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigne
 	unsigned char com = conn->read();
 	if(com != protocol::Protocol::ANS_GET_ART){
 		std::cerr<<"Expected ans_get_art, got: "<<com<<std::endl;
-		return false; //Something went wrong
+		return 2; //Something went wrong
 	}
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_ACK){
 		if(com != protocol::Protocol::ANS_NAK){
 			std::cerr<<"Expected ans_nak, got: "<<com<<std::endl;
-			return false; //Something went wrong
+			return 2; //Something went wrong
 		}else{
 			com = conn->read();
 			if(com != protocol::Protocol::ERR_NG_DOES_NOT_EXIST && com != protocol::Protocol::ERR_ART_DOES_NOT_EXIST){
 				std::cerr<<"Expected err_ng_does_not_exist OR err_art_does_not_exist got: "<<com<<std::endl;
-				return false; //Something went wrong
+				return 2; //Something went wrong
 			}
 		}
+		unsigned int t_err = com;
 		com = conn->read();
 		if(com != protocol::Protocol::ANS_END){
 			std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
-			return false; //Something went wrong
+			return 2; //Something went wrong
 		}
-		return false; //Command failed
+		if(t_err == protocol::Protocol::ERR_NG_DOES_NOT_EXIST){
+			return -1;
+		}
+		return 1; //Command failed
 	}else{
 		com = conn->read();
 		if(com != protocol::Protocol::PAR_STRING){
 			std::cerr<<"Expected string parameter identifier, got: "<<com<<std::endl;
-			return false; //Something went wrong
+			return 2; //Something went wrong
 		}
 		unsigned int n = read_int(conn);
 		title = read_string(n,conn);
@@ -372,7 +376,7 @@ bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigne
 		com = conn->read();
 		if(com != protocol::Protocol::PAR_STRING){
 			std::cerr<<"Expected string parameter identifier, got: "<<com<<std::endl;
-			return false; //Something went wrong
+			return 2; //Something went wrong
 		}
 		n = read_int(conn);
 		author = read_string(n,conn);
@@ -380,7 +384,7 @@ bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigne
 		com = conn->read();
 		if(com != protocol::Protocol::PAR_STRING){
 			std::cerr<<"Expected string parameter identifier, got: "<<com<<std::endl;
-			return false; //Something went wrong
+			return 2; //Something went wrong
 		}
 		n = read_int(conn);
 		text = read_string(n,conn);
@@ -388,10 +392,10 @@ bool client_connection_handler::send_command_get_art(unsigned int ng_id, unsigne
 	com = conn->read();
 	if(com != protocol::Protocol::ANS_END){
 		std::cerr<<"Expected ans_end, got: "<<com<<std::endl;
-		return false; //Something went wrong
+		return 2; //Something went wrong
 	}
 	std::cout<<"Title: "<<title<<"\nAuthor: "<<author<<"\nText: "<<text<<std::endl;
-	return true;
+	return 0;
 }
 
 }

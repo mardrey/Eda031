@@ -9,11 +9,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-<<<<<<< HEAD
-=======
+#include "article.h"
 #include <stdio.h>
 
->>>>>>> d619a4a0c9742ba122f145b8ca245ff835d752c3
 	namespace database{
 
 	bool delete_file_dir_entry(std::string& path){
@@ -276,77 +274,82 @@
 		return 0;
 	}
 	article* on_disc_database::get_article(unsigned int group_id, unsigned int article_id){
+
 		std::stringstream ss1;
-		std::string d_name_ng;
-		std::string d_name_art;
-		DIR *dir = opendir(path.c_str());
-		struct dirent *entry = readdir(dir);
-		bool ng_found = false;
-		while(entry!=NULL && !ng_found){
-			if(entry->d_type == DT_DIR){
-				d_name_ng = entry->d_name;
-				std::stringstream split_stream(d_name_ng);
-				std::string temp_string;
-				getline(split_stream,temp_string,':');
-				int ng_id = atoi(temp_string.c_str());
-				if(ng_id==group_id){
-					ng_found = true;
-				}
-			}
-			entry = readdir(dir);
-		}
-		if(!ng_found){
-			std::cerr<<"News group does not exist"<<std::endl;
-			return NULL;
-		}
-		ss1<<path<<"/"<<d_name_ng;
-		std::string ng_path = ss1.str();
-		DIR *ng_dir = opendir(ng_path.c_str());	
-		if(ng_dir==NULL){
-			std::cerr<<"News group does not exist"<<std::endl;
-			return NULL;
-		}
+        std::string d_name_ng;
+        std::string d_name_art;
+        DIR *dir = opendir(path.c_str());
+        struct dirent *entry = readdir(dir);
+        bool ng_found = false;
+        while(entry!=NULL && !ng_found){
+            if(entry->d_type == DT_DIR){
+                d_name_ng = entry->d_name;
+                std::stringstream split_stream(d_name_ng);
+                std::string temp_string;
+                getline(split_stream,temp_string,':');
+                int ng_id = atoi(temp_string.c_str());
+                if(ng_id==group_id){
+                    ng_found = true;
+                }
+            }
+            entry = readdir(dir);
+        }
+        if(!ng_found){
+            std::cerr<<"News group does not exist"<<std::endl;
+            return NULL;
+        }
+        ss1<<path<<"/"<<d_name_ng;
+        std::string ng_path = ss1.str();
+        DIR *ng_dir = opendir(ng_path.c_str());   
+        if(ng_dir==NULL){
+            std::cerr<<"News group does not exist"<<std::endl;
+            return NULL;
+        }
         struct dirent *entry2;
         bool art_found = false;
-		while(!art_found){
-			entry2 = readdir(ng_dir);
-			if(entry2==NULL){
-				return NULL;
-			}
-			if(entry2->d_name!="."  && (entry2->d_name!="..") ){
-				d_name_art = entry2->d_name;
-				std::stringstream split_stream(d_name_art);
-				std::string temp_string;
-				getline(split_stream,temp_string,':');
-				int art_id = atoi(temp_string.c_str());
-				if(art_id==article_id){
-					art_found = true;
-				}
-			}
-		}
+        while(!art_found){
+            entry2 = readdir(ng_dir);
+            if(entry2==NULL){
+            	std::cerr<<"Could not find article"<<std::endl;
+                return NULL;
+            }
+            if(entry2->d_name!="."  && (entry2->d_name!="..") ){
+                d_name_art = entry2->d_name;
+                std::stringstream split_stream(d_name_art);
+                std::string temp_string;
+                getline(split_stream,temp_string,':');
+                int art_id = atoi(temp_string.c_str());
+                if(art_id==article_id){
+                    art_found = true;
+                }
+            }
+        }
         if(!art_found){
-			std::cerr<<"article was not found, tardass"<<std::endl;
-			return NULL;
-		}
-		std::ifstream ifs;
-		ifs.open(((ng_path+"/"+d_name_art).c_str()));
-		std::string title;
-		std::string blank;
-		std::string author;
-		std::string content;			
-		ifs>>title;
-		ifs>>blank;
-		ifs>>author;
-		ifs>>blank;
-		while(!ifs.eof()){
-			std::string temp;
-			ifs>>temp;
-			content+=temp;
-		}
-		std::cout<<"title: "<<title<<std::endl;
-		std::cout<<"author: "<<author<<std::endl;
-		std::cout<<"content: "<<content<<std::endl;
-		return NULL;
+            std::cerr<<"article was not found"<<std::endl;
+            return NULL;
+        }
+        std::ifstream ifs;
+        ifs.open(((ng_path+"/"+d_name_art).c_str()));
+        std::string title;
+        std::string blank;
+        std::string author;
+        std::string content;           
+        ifs>>title;
+        ifs>>blank;
+        ifs>>author;
+        ifs>>blank;
+        while(!ifs.eof()){
+            std::string temp;
+            ifs>>temp;
+            content+=temp;
+        }
+        std::cout<<"title: "<<title<<std::endl;
+        std::cout<<"author: "<<author<<std::endl;
+        std::cout<<"content: "<<content<<std::endl;
+		
+        article art(article_id,title,author,content);
+		return &art;
+
 
 	}
 	news_group* on_disc_database::get_news_group(unsigned int id){

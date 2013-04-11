@@ -397,12 +397,14 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 		conn->write(protocol::Protocol::ANS_GET_ART);
 		news_group* ng_pointer = imd->get_news_group(group);
 		if(ng_pointer==0){
+			std::cout<<"NGNOTFOUND"<<std::endl;
 			conn->write(protocol::Protocol::ANS_NAK);
 			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
 		}
 		else{
 			database::article* art_pointer= imd->get_article(group, article);
 			if(art_pointer == 0){ 
+
 				conn->write(protocol::Protocol::ANS_NAK);
 				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 			}

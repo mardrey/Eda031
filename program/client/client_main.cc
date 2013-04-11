@@ -125,13 +125,17 @@ int main(int argc, char* argv[]){
 				std::string art;				
 				std::cin>>art;
 				unsigned int art_nbr = atoi(art.c_str()); //if not a number, gives group with id 0
-				bool success = cch.send_command_get_art(id_nbr,art_nbr);
-				if(success){
+				int success = cch.send_command_get_art(id_nbr,art_nbr);
+				if(success == 0){
 					std::cout<<"Article found"<<std::endl;
 				}
-				else{
+				else if(success == 1){
 					std::cerr<<"Article not found"<<std::endl;
-				}	
+				}else if(success == -1){
+					std::cerr<<"News group not found"<<std::endl;
+				}else if(success == 2){
+					std::cerr<<"Server communication error"<<std::endl;
+				}
 				}
 			break;
 			case 7:{
