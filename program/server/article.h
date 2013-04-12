@@ -7,18 +7,17 @@
 namespace database{
 class article{
 public:
-	article(unsigned int i, std::string titl, std::string aut, std::string cont);
+	article(int i, std::string titl, std::string aut, std::string cont);
 	~article();
 	std::string get_content();
-	unsigned int get_id();
+	int get_id();
 	std::string get_title();
 	std::string get_author();
-	bool operator==(article other);
 private:
 	std::string content;
 	std::string title;
 	std::string author;
-	unsigned int id;
+	int id;
 };
 }
 #endif

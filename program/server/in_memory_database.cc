@@ -9,14 +9,10 @@
 
 
 namespace database{
-		in_memory_database::in_memory_database(){
+		in_memory_database::in_memory_database() : database(){
 			news_group_ids = 0;	
 		}
 		in_memory_database::~in_memory_database(){}
-		void print_status(int i){
-			std::cout<<"status "<<i<<std::endl;
-
-		}
 
 		int in_memory_database::add_news_group(std::string& name){
 			for(unsigned int i = 0; i< ngnames.size(); ++i){
@@ -38,7 +34,7 @@ namespace database{
 			return 0;
 
 		}
-		bool in_memory_database::delete_news_group(unsigned int id){
+		bool in_memory_database::delete_news_group(int id){
 			bool found = false;			
 			for(unsigned int i = 0; i<ngroups.size();++i){
 				if(ngroups[i].get_id()==id){
@@ -58,7 +54,7 @@ namespace database{
 		}
 
 
-		bool in_memory_database::add_article(unsigned int id, std::string& title, std::string& author, std::string& content){
+		bool in_memory_database::add_article(int id, std::string& title, std::string& author, std::string& content){
 			for(unsigned int i = 0; i<ngroups.size();++i){
 				if(ngroups[i].get_id()==id){
 					ngroups[i].new_article(title,author,content);	
@@ -68,7 +64,7 @@ namespace database{
 			return false;
 		}
 		// 0 = group and article found, 1 = article found, -1 = niether group nor article found
-		int in_memory_database::delete_article(unsigned int group_id, unsigned int article_id){ 
+		int in_memory_database::delete_article(int group_id, int article_id){ 
 			int found = -1;
 			for(unsigned int i = 0; i<ngroups.size();++i){
 				if(ngroups[i].get_id()==group_id){
@@ -89,22 +85,30 @@ namespace database{
 
 		}
 
-		article* in_memory_database::get_article(unsigned int group_id, unsigned int article_id){
+		article in_memory_database::get_article(int group_id, int article_id){
+
 			article* art_pointer = 0;
 			for(unsigned int i = 0; i< ngroups.size(); ++i){
 				if(ngroups[i].get_id()==group_id){
 					art_pointer = ngroups[i].get_article_from_id(article_id);
 				}
 			}
-			return art_pointer;
+			if(art_pointer == NULL || art_pointer == 0){
+				std::string f("Fail");
+				article fail_art(-1,f,f,f);
+				return fail_art;
+			}
+			return *art_pointer;
 		}
-		news_group* in_memory_database::get_news_group(unsigned int id){		
+		news_group in_memory_database::get_news_group(int id){		
 			for(unsigned int i = 0; i<ngroups.size();++i){
 				if(ngroups[i].get_id()==id){
-					return &ngroups[i];
+					return ngroups[i];
 				}
 			}
-			return 0;
+			std::string f("Fail");
+			news_group fail(f,-1);
+			return fail; //fix unsigned so it is signed
 
 		}
 

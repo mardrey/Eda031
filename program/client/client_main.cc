@@ -28,7 +28,6 @@ int main(int argc, char* argv[]){
 
 	client_connection_handler cch(&cp);
 	while(true){
-		std::cout<<"in da loop"<<std::endl;
 		std::cin>>command;
 		int nbr = atoi(command.c_str());
 		std::cout<<"COMMAND: "<<nbr<<std::endl;

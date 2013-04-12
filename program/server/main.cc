@@ -20,20 +20,23 @@ int com_delete_art(client_server::Connection* conn) throw(client_server::Connect
 int com_get_art(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 int readCommand(client_server::Connection* conn) throw(client_server::ConnectionClosedException);
 
-//database::in_memory_database imd;
-//using namespace client_server;
 using namespace database;
-
-
-bool on_disc = true;
-on_disc_database* imd;
+database::database* imd;
 
 int main(int argc, char* argv[]){	
-	if(argc != 2){
-		std::cerr<<"Run format is: "<<argv[0]<<" [port]"<<std::endl;
+	if(argc != 3){
+		std::cerr<<"Run format is: "<<argv[0]<<" [port] [-D/-M], D stands for disc and M stands for Memory"<<std::endl;
 		return 1;
 	}
-	imd = new on_disc_database();
+	std::string DorM(argv[2]);
+	if(DorM == "-D"){
+		imd = new on_disc_database();
+	}else if(DorM == "-M"){
+		imd = new in_memory_database();
+	}else{
+		std::cerr << "invalid argument \"" << argv[2]<<"\""<<std::endl;
+		exit(1);
+	}
 	client_server::Server s(atoi(argv[1]));
 	if(!s.isReady()){
 		std::cerr << "Server could not be initialized" << std::endl;
@@ -42,19 +45,16 @@ int main(int argc, char* argv[]){
 		std::cout <<"Server initialized"<< std::endl;
 	}
 	while(true){
-		std::cout<<"looping"<<std::endl;
 		client_server::Connection* conn = s.waitForActivity();
 		if(conn != 0){
-			std::cout<<"conn is not zero"<<std::endl;
 			try{
-				//do connection stuff
 				int nbr = readCommand(conn);
 				if(nbr == 1){
 					std::cerr<<"Something went wrong"<<std::endl;
 				}
 			}catch(client_server::ConnectionClosedException&){
 				s.deregisterConnection(conn);
-				delete conn;
+				delete(conn);
 				std::cout << "Client closed connection" << std::endl;
 			}
 		}else{
@@ -63,7 +63,6 @@ int main(int argc, char* argv[]){
 		}
 	}
 	delete(imd);
-	/* code */
 	return 0;
 }
 
@@ -193,7 +192,6 @@ int com_delete_ng(client_server::Connection* conn) throw(client_server::Connecti
 	std::cout<<"  -inDeleteNG"<<std::endl;
 	unsigned char par_num = conn->read();
 	if(par_num == protocol::Protocol::PAR_NUM){
-
 		unsigned int N = read_int(conn);
 		unsigned char end = conn->read();
 		if(end == protocol::Protocol::COM_END){
@@ -222,35 +220,25 @@ int com_list_art(client_server::Connection* conn) throw(client_server::Connectio
 	std::cout<<"  -inListArt"<<std::endl;
 	unsigned char par_num = conn->read();
 	if(par_num == protocol::Protocol::PAR_NUM){
-
 		unsigned int N = read_int(conn);
-
 		unsigned char end = conn->read();
 		if(end == protocol::Protocol::COM_END){
-			news_group* ng = imd->get_news_group(N);
+			news_group ng = imd->get_news_group(N);
 			conn->write(protocol::Protocol::ANS_LIST_ART);
-			if(ng == 0){
+			if(ng.get_id() == -1){
 				conn->write(protocol::Protocol::ANS_NAK);
 				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 			}else{
-				std::vector<article>* arts = ng->list_articles();
+				std::vector<article>* arts = ng.list_articles();
 				conn->write(protocol::Protocol::ANS_ACK);
 				conn->write(protocol::Protocol::PAR_NUM);
-
 				write_int(arts->size(), conn);
-
 				for(unsigned int i = 0; i < arts->size(); ++i){
 					conn->write(protocol::Protocol::PAR_NUM);
-
 					write_int((*arts)[i].get_id(), conn);
-
-
-
 					unsigned int n = (*arts)[i].get_title().size();
 					conn->write(protocol::Protocol::PAR_STRING);
-
 					write_int((*arts)[i].get_title().size(), conn);
-
 					for(unsigned int j = 0; j < n; ++j){
 						conn->write((*arts)[i].get_title()[j]);
 					}
@@ -395,45 +383,49 @@ int com_get_art(client_server::Connection* conn) throw(client_server::Connection
 			return 1;
 		}
 		conn->write(protocol::Protocol::ANS_GET_ART);
-		news_group* ng_pointer = imd->get_news_group(group);
-		if(ng_pointer==0){
+		std::cout<<"NNNN0"<<std::endl;
+		news_group ng_pointer = imd->get_news_group(group);
+		std::cout<<"NNNN1"<<std::endl;
+		if(ng_pointer.get_id() == -1){
 			std::cout<<"NGNOTFOUND"<<std::endl;
 			conn->write(protocol::Protocol::ANS_NAK);
 			conn->write(protocol::Protocol::ERR_NG_DOES_NOT_EXIST);
-		}
-		else{
-			delete(ng_pointer);
-			database::article* art_pointer= imd->get_article(group, article);
-			if(art_pointer == 0){ 
-
+		}else{
+			std::cout<<"NNNN2"<<std::endl;
+			database::article art_pointer= imd->get_article(group, article);
+			std::cout<<"NNNN3"<<std::endl;
+			if(art_pointer.get_id() == -1){ 
+				std::cout<<"NNNN4"<<std::endl;
 				conn->write(protocol::Protocol::ANS_NAK);
 				conn->write(protocol::Protocol::ERR_ART_DOES_NOT_EXIST);
 			}
 			else{	
+					std::cout<<"NNNN5"<<std::endl;
 					conn->write(protocol::Protocol::ANS_ACK);
 					conn->write(protocol::Protocol::PAR_STRING);
-					std::string title = art_pointer->get_title();
+					std::string title = art_pointer.get_title();
+					std::cout<<"NNNN6"<<std::endl;
 					write_int(title.size(), conn);
 					for(unsigned int i = 0; i< title.size(); ++i){
 						conn->write(title[i]);
 					}
 					conn->write(protocol::Protocol::PAR_STRING);
-					std::string author = art_pointer->get_author();
+					std::string author = art_pointer.get_author();
+					std::cout<<"NNNN7"<<std::endl;
 					write_int(author.size(),conn);
 					for(unsigned int i = 0; i< author.size(); ++i){
 						conn->write(author[i]);
 					}
 					conn->write(protocol::Protocol::PAR_STRING);
-					std::string content = art_pointer->get_content();	
+					std::string content = art_pointer.get_content();
+					std::cout<<"NNNN8"<<std::endl;	
 					write_int(content.size(),conn);
 					for(unsigned int i = 0; i< content.size(); ++i){
 						conn->write(content[i]);
 					}
-				delete(art_pointer);
 			}
 				
 		}
-
 		conn->write(protocol::Protocol::ANS_END);
 		std::cout<<"  -Done"<<std::endl;
 	return 0;

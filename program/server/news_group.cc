@@ -6,7 +6,7 @@
 #include <climits>
 namespace database{
 
-news_group::news_group(std::string& nam, unsigned int i){
+news_group::news_group(std::string& nam, int i){
 	id = i;
 	article_ids=0;
 	name = nam;
@@ -14,7 +14,8 @@ news_group::news_group(std::string& nam, unsigned int i){
 news_group::~news_group(){
 	
 }
-unsigned int news_group::get_id(){
+
+int news_group::get_id(){
 	return id;
 }
 std::string news_group::get_name(){
@@ -37,7 +38,7 @@ void news_group::new_article(std::string& title, std::string& author, std::strin
 void news_group::add_article(article a){
 	articles.push_back(a);
 }
-bool news_group::remove_article(unsigned int id){
+bool news_group::remove_article(int id){
 	bool found = false;
 	for(unsigned int i = 0; i<articles.size(); ++i){
 		if(articles[i].get_id()==id){
@@ -47,7 +48,7 @@ bool news_group::remove_article(unsigned int id){
 	}
 	return found;
 }
-article* news_group::get_article_from_id(unsigned int art_id){
+article* news_group::get_article_from_id(int art_id){
 	article* dest = 0;
 	bool found = false;
 	for(unsigned int i = 0; i<articles.size()&&!found; ++i){
